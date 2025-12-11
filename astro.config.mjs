@@ -1,8 +1,8 @@
 import { defineConfig } from 'astro/config';
-import netlify from '@astrojs/netlify';
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  output: 'static',  // Statische Seiten (SSG)
-  site: 'https://aham-automobile.de',  // Später deine Domain
-  // adapter: netlify()  // Nur nötig wenn du SSR willst
+  site: 'https://aham-automobile.de',  // Deine Domain
+  integrations: [sitemap()],
+  output: 'static'
 });

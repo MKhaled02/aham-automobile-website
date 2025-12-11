@@ -1,16 +1,13 @@
-// src/lib/sanity.ts
 import { createClient } from '@sanity/client';
 import imageUrlBuilder from '@sanity/image-url';
 import type { SanityImageSource } from '@sanity/image-url/lib/types/types';
 
 // Sanity Client
 export const client = createClient({
-  projectId: import.meta.env.SANITY_PROJECT_ID,
-  dataset: import.meta.env.SANITY_DATASET,
-  useCdn: true,  // CDN für schnellere Ladezeiten
+  projectId: import.meta.env.SANITY_PROJECT_ID || '0v9orvow',
+  dataset: import.meta.env.SANITY_DATASET || 'autos',
+  useCdn: true,
   apiVersion: '2024-01-01',
-  // Token nur wenn nötig (für Drafts)
-  // token: import.meta.env.SANITY_API_TOKEN,
 });
 
 // Bild URL Builder
@@ -39,22 +36,6 @@ export async function getAlleFahrzeuge() {
       hauptbild,
       status,
       badge
-    }
-  `);
-}
-
-// Auch verkaufte Fahrzeuge (für "Referenzen" Seite)
-export async function getAlleFahrzeugeInklVerkauft() {
-  return await client.fetch(`
-    *[_type == "fahrzeug"] | order(_createdAt desc) {
-      _id,
-      marke,
-      modell,
-      "slug": slug.current,
-      baujahr,
-      preis,
-      hauptbild,
-      status
     }
   `);
 }
@@ -99,23 +80,7 @@ export async function getAlleFahrzeugSlugs() {
   `);
 }
 
-// Fahrzeuge nach Marke
-export async function getFahrzeugeNachMarke(marke: string) {
-  return await client.fetch(`
-    *[_type == "fahrzeug" && marke == $marke && status != "verkauft"] {
-      _id,
-      marke,
-      modell,
-      "slug": slug.current,
-      baujahr,
-      preis,
-      hauptbild,
-      status
-    }
-  `, { marke });
-}
-
-// Ähnliche Fahrzeuge (für Detailseite)
+// Ähnliche Fahrzeuge
 export async function getAehnlicheFahrzeuge(marke: string, currentId: string) {
   return await client.fetch(`
     *[_type == "fahrzeug" && marke == $marke && _id != $currentId && status != "verkauft"][0...3] {
@@ -128,18 +93,6 @@ export async function getAehnlicheFahrzeuge(marke: string, currentId: string) {
       hauptbild
     }
   `, { marke, currentId });
-}
-
-// ============ SEITENINHALT QUERIES ============
-
-export async function getSeiteninhalt(seite: string) {
-  return await client.fetch(`
-    *[_type == "seiteninhalt" && seite == $seite][0] {
-      ueberschrift,
-      text,
-      bild
-    }
-  `, { seite });
 }
 
 // ============ EINSTELLUNGEN QUERY ============

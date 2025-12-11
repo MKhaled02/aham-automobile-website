@@ -5,6 +5,7 @@
 [build.environment]
   NODE_VERSION = "18"
 
+# Redirect für 404
 [[redirects]]
   from = "/*"
   to = "/404"

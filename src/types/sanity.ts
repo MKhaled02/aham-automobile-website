@@ -1,5 +1,3 @@
-// src/types/sanity.ts
-
 export interface Fahrzeug {
   _id: string;
   marke: string;
