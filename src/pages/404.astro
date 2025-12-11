@@ -1,0 +1,55 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Seite nicht gefunden | AHAM Automobile">
+  
+  <section class="error-page">
+    <span class="error-code">404</span>
+    <h1>Seite nicht gefunden</h1>
+    <p>Die gewünschte Seite existiert leider nicht oder wurde verschoben.</p>
+    <div class="error-buttons">
+      <a href="/" class="btn btn-primary">Zur Startseite</a>
+      <a href="/fahrzeuge" class="btn btn-secondary">Fahrzeuge ansehen</a>
+    </div>
+  </section>
+  
+</Layout>
+
+<style>
+  .error-page {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  
+  .error-code {
+    font-family: var(--font-display);
+    font-size: 8rem;
+    font-weight: 700;
+    color: var(--olive);
+    line-height: 1;
+    opacity: 0.3;
+  }
+  
+  .error-page h1 {
+    margin: 20px 0;
+  }
+  
+  .error-page p {
+    color: var(--gray);
+    margin-bottom: 40px;
+    max-width: 400px;
+  }
+  
+  .error-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+</style>

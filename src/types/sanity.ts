@@ -14,7 +14,6 @@ export interface Fahrzeug {
   leistungKW?: number;
   hubraum?: number;
   farbe?: string;
-  tupielen?: number;
   fahrzeugtyp?: string;
   ausstattung?: string[];
   beschreibung?: string;

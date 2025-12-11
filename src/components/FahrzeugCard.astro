@@ -1,0 +1,177 @@
+---
+import { urlFor } from '../lib/sanity';
+import type { Fahrzeug } from '../types/sanity';
+
+interface Props {
+  fahrzeug: Fahrzeug;
+}
+
+const { fahrzeug } = Astro.props;
+
+const badgeLabels: Record<string, string> = {
+  neu: 'Neu eingetroffen',
+  top: 'Top Angebot',
+  reduziert: 'Reduziert',
+  garantie: 'Mit Garantie',
+  tuev: 'TÜV Neu'
+};
+
+const kraftstoffLabels: Record<string, string> = {
+  benzin: 'Benzin',
+  diesel: 'Diesel',
+  elektro: 'Elektro',
+  'hybrid-benzin': 'Hybrid',
+  'hybrid-diesel': 'Hybrid',
+  'plugin-hybrid': 'Plug-in-Hybrid'
+};
+---
+
+<a href={`/fahrzeuge/${fahrzeug.slug}`} class="fahrzeug-card">
+  <div class="card-image">
+    {fahrzeug.hauptbild && (
+      <img 
+        src={urlFor(fahrzeug.hauptbild).width(600).height(400).url()} 
+        alt={`${fahrzeug.marke} ${fahrzeug.modell}`}
+        loading="lazy"
+      />
+    )}
+    {fahrzeug.badge && (
+      <span class="badge">{badgeLabels[fahrzeug.badge] || fahrzeug.badge}</span>
+    )}
+    {fahrzeug.status === 'reserviert' && (
+      <span class="badge badge-reserved">Reserviert</span>
+    )}
+  </div>
+  
+  <div class="card-content">
+    <span class="card-brand">{fahrzeug.marke}</span>
+    <h3 class="card-title">{fahrzeug.modell}</h3>
+    
+    <div class="card-specs">
+      <span>{fahrzeug.baujahr}</span>
+      <span class="divider">•</span>
+      <span>{fahrzeug.kilometerstand?.toLocaleString('de-DE')} km</span>
+      <span class="divider">•</span>
+      <span>{kraftstoffLabels[fahrzeug.kraftstoff] || fahrzeug.kraftstoff}</span>
+    </div>
+    
+    <div class="card-footer">
+      <span class="card-price">{fahrzeug.preis?.toLocaleString('de-DE')} €</span>
+      <span class="card-arrow">→</span>
+    </div>
+  </div>
+</a>
+
+<style>
+  .fahrzeug-card {
+    background: var(--white);
+    overflow: hidden;
+    transition: all 0.4s ease;
+    display: block;
+  }
+  
+  .fahrzeug-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-image {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+  }
+  
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  
+  .fahrzeug-card:hover .card-image img {
+    transform: scale(1.05);
+  }
+  
+  .badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--olive);
+    color: var(--white);
+    padding: 6px 14px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  
+  .badge-reserved {
+    background: #E6A23C;
+  }
+  
+  .card-content {
+    padding: 25px;
+  }
+  
+  .card-brand {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--olive);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+    display: block;
+  }
+  
+  .card-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    color: var(--black);
+  }
+  
+  .card-specs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--gray);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .divider {
+    color: var(--gray-light);
+  }
+  
+  .card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid var(--gray-light);
+  }
+  
+  .card-price {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--olive);
+  }
+  
+  .card-arrow {
+    width: 40px;
+    height: 40px;
+    background: var(--black);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: background 0.3s ease;
+  }
+  
+  .fahrzeug-card:hover .card-arrow {
+    background: var(--olive);
+  }
+</style>

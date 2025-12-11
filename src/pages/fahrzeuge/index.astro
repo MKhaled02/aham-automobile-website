@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getAlleFahrzeuge, urlFor } from '../../lib/sanity';
+import FahrzeugCard from '../../components/FahrzeugCard.astro';
+import { getAlleFahrzeuge } from '../../lib/sanity';
 import type { Fahrzeug } from '../../types/sanity';
 
 const fahrzeuge: Fahrzeug[] = await getAlleFahrzeuge();
@@ -8,48 +9,139 @@ const fahrzeuge: Fahrzeug[] = await getAlleFahrzeuge();
 
 <Layout 
   title="Unsere Fahrzeuge | AHAM Automobile"
-  description="Entdecken Sie unsere Auswahl an geprüften Gebrauchtwagen in Ludwigsfelde."
+  description="Entdecken Sie unsere Auswahl an geprüften Gebrauchtwagen in Ludwigsfelde. Alle Fahrzeuge mit Garantie und transparenter Historie."
 >
-  <main>
-    <h1>Unsere Fahrzeuge</h1>
-    <p>{fahrzeuge.length} Fahrzeuge verfügbar</p>
-
-    <div class="fahrzeuge-grid">
-      {fahrzeuge.map((fahrzeug) => (
-        <a href={`/fahrzeuge/${fahrzeug.slug}`} class="fahrzeug-card">
-          <img 
-            src={urlFor(fahrzeug.hauptbild).width(400).height(300).url()} 
-            alt={`${fahrzeug.marke} ${fahrzeug.modell}`}
-          />
-          <h2>{fahrzeug.marke} {fahrzeug.modell}</h2>
-          <p>{fahrzeug.baujahr} • {fahrzeug.kilometerstand?.toLocaleString('de-DE')} km</p>
-          <p class="preis">{fahrzeug.preis?.toLocaleString('de-DE')} €</p>
-        </a>
-      ))}
+  
+  <!-- Hero -->
+  <section class="page-hero">
+    <div class="page-hero-content">
+      <span class="section-label">Unser Angebot</span>
+      <h1>Unsere <span>Fahrzeuge</span></h1>
+      <p>{fahrzeuge.length} Fahrzeuge verfügbar</p>
     </div>
-  </main>
+  </section>
+  
+  <!-- Fahrzeuge Grid -->
+  <section class="section">
+    <div class="fahrzeuge-grid">
+      {fahrzeuge.length > 0 ? (
+        fahrzeuge.map((fahrzeug) => (
+          <FahrzeugCard fahrzeug={fahrzeug} />
+        ))
+      ) : (
+        <div class="no-results">
+          <h3>Aktuell keine Fahrzeuge verfügbar</h3>
+          <p>Schauen Sie bald wieder vorbei oder kontaktieren Sie uns für individuelle Wünsche.</p>
+          <a href="/kontakt" class="btn btn-primary">Kontakt aufnehmen</a>
+        </div>
+      )}
+    </div>
+  </section>
+  
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>Nicht das Richtige gefunden?</h2>
+      <p>Wir helfen Ihnen gerne bei der Suche nach Ihrem Wunschfahrzeug.</p>
+      <a href="tel:01708949479" class="btn btn-primary">Jetzt anrufen: 0170 8949479</a>
+    </div>
+  </section>
+  
 </Layout>
 
 <style>
+  .page-hero {
+    background: var(--cream);
+    padding: 150px 60px 80px;
+    text-align: center;
+  }
+  
+  .page-hero h1 {
+    margin-bottom: 15px;
+  }
+  
+  .page-hero h1 span {
+    color: var(--olive);
+  }
+  
+  .page-hero p {
+    color: var(--gray);
+    font-size: 1.1rem;
+  }
+  
   .fahrzeuge-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2rem;
-    padding: 2rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
   }
   
-  .fahrzeug-card {
-    text-decoration: none;
-    color: inherit;
+  .no-results {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
   }
   
-  .fahrzeug-card img {
-    width: 100%;
-    height: auto;
+  .no-results h3 {
+    margin-bottom: 15px;
   }
   
-  .preis {
-    font-size: 1.5rem;
-    font-weight: bold;
+  .no-results p {
+    color: var(--gray);
+    margin-bottom: 30px;
+  }
+  
+  .cta-section {
+    background: var(--olive);
+    color: var(--white);
+    padding: 80px 60px;
+    text-align: center;
+  }
+  
+  .cta-content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .cta-content h2 {
+    margin-bottom: 15px;
+    color: var(--white);
+  }
+  
+  .cta-content p {
+    margin-bottom: 30px;
+    opacity: 0.9;
+  }
+  
+  .cta-section .btn-primary {
+    background: var(--white);
+    color: var(--olive);
+    border-color: var(--white);
+  }
+  
+  .cta-section .btn-primary:hover {
+    background: var(--cream);
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 1200px) {
+    .fahrzeuge-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .page-hero {
+      padding: 120px 20px 60px;
+    }
+    
+    .fahrzeuge-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .cta-section {
+      padding: 60px 20px;
+    }
   }
 </style>

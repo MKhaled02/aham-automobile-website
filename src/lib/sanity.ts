@@ -19,7 +19,6 @@ export function urlFor(source: SanityImageSource) {
 
 // ============ FAHRZEUG QUERIES ============
 
-// Alle verfügbaren Fahrzeuge
 export async function getAlleFahrzeuge() {
   return await client.fetch(`
     *[_type == "fahrzeug" && status != "verkauft"] | order(_createdAt desc) {
@@ -40,7 +39,6 @@ export async function getAlleFahrzeuge() {
   `);
 }
 
-// Einzelnes Fahrzeug nach Slug
 export async function getFahrzeugBySlug(slug: string) {
   return await client.fetch(`
     *[_type == "fahrzeug" && slug.current == $slug][0] {
@@ -59,7 +57,6 @@ export async function getFahrzeugBySlug(slug: string) {
       leistungKW,
       hubraum,
       farbe,
-      tupielen,
       fahrzeugtyp,
       ausstattung,
       beschreibung,
@@ -71,7 +68,6 @@ export async function getFahrzeugBySlug(slug: string) {
   `, { slug });
 }
 
-// Alle Slugs für getStaticPaths()
 export async function getAlleFahrzeugSlugs() {
   return await client.fetch(`
     *[_type == "fahrzeug"] {
@@ -80,7 +76,6 @@ export async function getAlleFahrzeugSlugs() {
   `);
 }
 
-// Ähnliche Fahrzeuge
 export async function getAehnlicheFahrzeuge(marke: string, currentId: string) {
   return await client.fetch(`
     *[_type == "fahrzeug" && marke == $marke && _id != $currentId && status != "verkauft"][0...3] {
@@ -94,8 +89,6 @@ export async function getAehnlicheFahrzeuge(marke: string, currentId: string) {
     }
   `, { marke, currentId });
 }
-
-// ============ EINSTELLUNGEN QUERY ============
 
 export async function getEinstellungen() {
   return await client.fetch(`

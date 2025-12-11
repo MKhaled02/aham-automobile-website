@@ -1,19 +1,568 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getAlleFahrzeuge, getEinstellungen } from '../lib/sanity';
+import FahrzeugCard from '../components/FahrzeugCard.astro';
+import { getAlleFahrzeuge } from '../lib/sanity';
+import type { Fahrzeug } from '../types/sanity';
 
-const fahrzeuge = await getAlleFahrzeuge();
-const einstellungen = await getEinstellungen();
+const alleFahrzeuge: Fahrzeug[] = await getAlleFahrzeuge();
+const fahrzeuge = alleFahrzeuge.slice(0, 6); // Nur erste 6 auf Startseite
 ---
 
-<Layout title="AHAM Automobile | Autohändler Ludwigsfelde">
-  <main>
-    <h1>Willkommen bei AHAM Automobile</h1>
-    <p>Telefon: {einstellungen?.telefon}</p>
+<Layout title="AHAM Automobile | Autohändler in Ludwigsfelde">
+  
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <span class="hero-badge">
+        <span class="badge-dot"></span>
+        Autohändler in Ludwigsfelde
+      </span>
+      <h1>Ihr Auto.<br><span>Unsere Leidenschaft.</span></h1>
+      <p class="hero-subtitle">
+        Bei AHAM Automobile finden Sie geprüfte Qualitätsfahrzeuge mit transparenter Historie. 
+        Persönliche Beratung und ehrlicher Service – dafür stehen wir.
+      </p>
+      <div class="hero-buttons">
+        <a href="/fahrzeuge" class="btn btn-primary">Fahrzeuge ansehen →</a>
+        <a href="/kontakt" class="btn btn-secondary">Kontakt aufnehmen</a>
+      </div>
+    </div>
+    <div class="hero-image">
+      <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=1200&q=80" alt="Premium Fahrzeug">
+    </div>
+  </section>
+  
+  <!-- Trust Bar -->
+  <section class="trust-bar">
+    <div class="trust-item">
+      <span class="trust-icon">⭐</span>
+      <div class="trust-text">
+        <strong>5.0 von 5 Sternen</strong>
+        <span>21 Google Bewertungen</span>
+      </div>
+    </div>
+    <div class="trust-item">
+      <span class="trust-icon">✓</span>
+      <div class="trust-text">
+        <strong>Geprüfte Fahrzeuge</strong>
+        <span>Mit Garantie & Historie</span>
+      </div>
+    </div>
+    <div class="trust-item">
+      <span class="trust-icon">🤝</span>
+      <div class="trust-text">
+        <strong>Faire Preise</strong>
+        <span>Transparent & ehrlich</span>
+      </div>
+    </div>
+    <div class="trust-item">
+      <span class="trust-icon">📍</span>
+      <div class="trust-text">
+        <strong>Preussen Park</strong>
+        <span>Ludwigsfelde</span>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Fahrzeuge Section -->
+  <section class="section fahrzeuge-section">
+    <div class="section-header">
+      <span class="section-label">Unser Angebot</span>
+      <h2 class="section-title">Aktuelle <span>Fahrzeuge</span></h2>
+      <p class="section-subtitle">Entdecken Sie unsere handverlesene Auswahl an Qualitätsfahrzeugen</p>
+    </div>
     
-    <h2>Unsere Fahrzeuge ({fahrzeuge.length})</h2>
+    <div class="fahrzeuge-grid">
+      {fahrzeuge.length > 0 ? (
+        fahrzeuge.map((fahrzeug) => (
+          <FahrzeugCard fahrzeug={fahrzeug} />
+        ))
+      ) : (
+        <p class="no-fahrzeuge">Aktuell keine Fahrzeuge verfügbar. Schauen Sie bald wieder vorbei!</p>
+      )}
+    </div>
     
-    <!-- Hier dein Frontend-Design -->
-    
-  </main>
+    {alleFahrzeuge.length > 6 && (
+      <div class="section-cta">
+        <a href="/fahrzeuge" class="btn btn-primary">Alle {alleFahrzeuge.length} Fahrzeuge ansehen →</a>
+      </div>
+    )}
+  </section>
+  
+  <!-- Über Uns Section -->
+  <section class="section about-section">
+    <div class="about-image">
+      <img src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=800&q=80" alt="AHAM Automobile">
+      <div class="about-badge">
+        <span class="badge-number">100%</span>
+        <span class="badge-text">Kundenzufriedenheit</span>
+      </div>
+    </div>
+    <div class="about-content">
+      <span class="section-label">Über Uns</span>
+      <h2 class="section-title">Mehr als nur ein <span>Autohändler</span></h2>
+      <p>
+        Bei AHAM Automobile steht der Kunde im Mittelpunkt. Wir sind kein gewöhnliches Autohaus – 
+        wir sind Ihr Partner beim Autokauf. Jedes Fahrzeug wird von uns persönlich geprüft und 
+        aufbereitet, bevor es in den Verkauf geht.
+      </p>
+      <p>
+        Unsere Kunden schätzen unsere ehrliche Beratung und faire Preise. Das bestätigen auch 
+        unsere 21 Google-Bewertungen mit durchschnittlich 5 von 5 Sternen.
+      </p>
+      <ul class="about-features">
+        <li><span class="check">✓</span> Geprüfte Fahrzeughistorie</li>
+        <li><span class="check">✓</span> Faire Inzahlungnahme</li>
+        <li><span class="check">✓</span> Finanzierung möglich</li>
+        <li><span class="check">✓</span> Garantie auf Wunsch</li>
+      </ul>
+      <a href="/kontakt" class="btn btn-primary">Termin vereinbaren →</a>
+    </div>
+  </section>
+  
+  <!-- Kontakt Section -->
+  <section class="section contact-section">
+    <div class="contact-content">
+      <span class="section-label">Kontakt</span>
+      <h2 class="section-title">Besuchen Sie <span>uns</span></h2>
+      
+      <div class="contact-info">
+        <div class="contact-item">
+          <span class="contact-icon">📍</span>
+          <div>
+            <strong>Adresse</strong>
+            <p>Nuthedamm 17<br>14974 Ludwigsfelde<br>Preussen Park</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon">📞</span>
+          <div>
+            <strong>Telefon</strong>
+            <p><a href="tel:01708949479">0170 8949479</a></p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon">🕐</span>
+          <div>
+            <strong>Öffnungszeiten</strong>
+            <p>Do: 10:00 – 18:00 Uhr<br>Weitere Termine nach Vereinbarung</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="contact-map">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2437.5!2d13.2547!3d52.3019!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTLCsDE4JzA2LjgiTiAxM8KwMTUnMTYuOSJF!5e0!3m2!1sde!2sde!4v1" 
+        width="100%" 
+        height="100%" 
+        style="border:0;" 
+        allowfullscreen="" 
+        loading="lazy"
+        title="AHAM Automobile Standort"
+      ></iframe>
+    </div>
+  </section>
+  
 </Layout>
+
+<style>
+  /* Hero Section */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    padding-top: 80px;
+  }
+  
+  .hero-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--cream);
+    z-index: -1;
+  }
+  
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px;
+    max-width: 700px;
+  }
+  
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--white);
+    border: 1px solid var(--gray-light);
+    padding: 10px 20px;
+    margin-bottom: 30px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--olive);
+    width: fit-content;
+  }
+  
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--olive);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  
+  .hero h1 {
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    line-height: 1.1;
+    margin-bottom: 25px;
+  }
+  
+  .hero h1 span {
+    color: var(--olive);
+    font-style: italic;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--gray);
+    max-width: 450px;
+    margin-bottom: 40px;
+    line-height: 1.8;
+  }
+  
+  .hero-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  
+  .hero-image {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .hero-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100%;
+    background: linear-gradient(to right, var(--cream), transparent);
+    z-index: 1;
+  }
+  
+  /* Trust Bar */
+  .trust-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    background: var(--white);
+    border-top: 1px solid var(--gray-light);
+    border-bottom: 1px solid var(--gray-light);
+  }
+  
+  .trust-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 30px 40px;
+    border-right: 1px solid var(--gray-light);
+  }
+  
+  .trust-item:last-child {
+    border-right: none;
+  }
+  
+  .trust-icon {
+    font-size: 1.8rem;
+  }
+  
+  .trust-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  
+  .trust-text strong {
+    font-size: 0.95rem;
+  }
+  
+  .trust-text span {
+    font-size: 0.8rem;
+    color: var(--gray);
+  }
+  
+  /* Fahrzeuge Section */
+  .fahrzeuge-section {
+    background: var(--white);
+  }
+  
+  .fahrzeuge-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  .no-fahrzeuge {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px;
+    color: var(--gray);
+  }
+  
+  .section-cta {
+    text-align: center;
+    margin-top: 50px;
+  }
+  
+  /* About Section */
+  .about-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+    background: var(--cream);
+  }
+  
+  .about-image {
+    position: relative;
+  }
+  
+  .about-image img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+  }
+  
+  .about-badge {
+    position: absolute;
+    bottom: -30px;
+    right: -30px;
+    background: var(--olive);
+    color: var(--white);
+    padding: 30px;
+    text-align: center;
+  }
+  
+  .badge-number {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  
+  .badge-text {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 5px;
+    display: block;
+  }
+  
+  .about-content {
+    padding-right: 60px;
+  }
+  
+  .about-content .section-label,
+  .about-content .section-title {
+    text-align: left;
+  }
+  
+  .about-content p {
+    color: var(--gray);
+    margin-bottom: 20px;
+    line-height: 1.8;
+  }
+  
+  .about-features {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 30px 0;
+  }
+  
+  .about-features li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .about-features .check {
+    color: var(--olive);
+    font-weight: bold;
+  }
+  
+  /* Contact Section */
+  .contact-section {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    background: var(--black);
+    color: var(--white);
+    padding: 0;
+  }
+  
+  .contact-content {
+    padding: 80px 60px;
+  }
+  
+  .contact-content .section-label {
+    color: var(--olive-light);
+  }
+  
+  .contact-content .section-title {
+    color: var(--white);
+    text-align: left;
+  }
+  
+  .contact-info {
+    margin-top: 40px;
+  }
+  
+  .contact-item {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .contact-icon {
+    font-size: 1.5rem;
+  }
+  
+  .contact-item strong {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .contact-item p {
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
+  }
+  
+  .contact-item a {
+    color: var(--olive-light);
+  }
+  
+  .contact-map {
+    min-height: 400px;
+  }
+  
+  .contact-map iframe {
+    filter: grayscale(100%) contrast(1.1);
+  }
+  
+  /* Responsive */
+  @media (max-width: 1200px) {
+    .fahrzeuge-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 968px) {
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+    
+    .hero-content {
+      padding: 100px 20px 60px;
+      max-width: 100%;
+    }
+    
+    .hero-image {
+      height: 400px;
+    }
+    
+    .hero-image::before {
+      display: none;
+    }
+    
+    .trust-bar {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .trust-item {
+      padding: 20px;
+    }
+    
+    .trust-item:nth-child(2) {
+      border-right: none;
+    }
+    
+    .about-section {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    
+    .about-content {
+      padding: 0 20px;
+    }
+    
+    .about-badge {
+      right: 20px;
+      bottom: -20px;
+    }
+    
+    .contact-section {
+      grid-template-columns: 1fr;
+    }
+    
+    .contact-map {
+      height: 300px;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .fahrzeuge-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .trust-bar {
+      grid-template-columns: 1fr;
+    }
+    
+    .trust-item {
+      border-right: none;
+      border-bottom: 1px solid var(--gray-light);
+    }
+    
+    .trust-item:last-child {
+      border-bottom: none;
+    }
+    
+    .about-features {
+      grid-template-columns: 1fr;
+    }
+    
+    .hero-buttons {
+      flex-direction: column;
+    }
+    
+    .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

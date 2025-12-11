@@ -1,15 +1,18 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getAlleFahrzeugSlugs, getFahrzeugBySlug, urlFor } from '../../lib/sanity';
+import FahrzeugCard from '../../components/FahrzeugCard.astro';
+import { getAlleFahrzeugSlugs, getFahrzeugBySlug, getAehnlicheFahrzeuge, urlFor } from '../../lib/sanity';
 import type { Fahrzeug } from '../../types/sanity';
 
 // Generiert alle Seiten bei Build-Time
 export async function getStaticPaths() {
   const slugs = await getAlleFahrzeugSlugs();
   
-  return slugs.map((item: { slug: string }) => ({
-    params: { slug: item.slug }
-  }));
+  return slugs
+    .filter((item: { slug: string }) => item.slug)
+    .map((item: { slug: string }) => ({
+      params: { slug: item.slug }
+    }));
 }
 
 const { slug } = Astro.params;
@@ -20,49 +23,532 @@ if (!fahrzeug) {
   return Astro.redirect('/404');
 }
 
-const title = `${fahrzeug.marke} ${fahrzeug.modell} | AHAM Automobile`;
-const description = `${fahrzeug.marke} ${fahrzeug.modell} (${fahrzeug.baujahr}) für ${fahrzeug.preis?.toLocaleString('de-DE')}€`;
+// Ähnliche Fahrzeuge laden
+const aehnliche = await getAehnlicheFahrzeuge(fahrzeug.marke, fahrzeug._id);
+
+// SEO Daten
+const title = `${fahrzeug.marke} ${fahrzeug.modell} (${fahrzeug.baujahr}) | AHAM Automobile`;
+const description = `${fahrzeug.marke} ${fahrzeug.modell} mit ${fahrzeug.kilometerstand?.toLocaleString('de-DE')} km für ${fahrzeug.preis?.toLocaleString('de-DE')}€ in Ludwigsfelde kaufen.`;
+
+// Labels
+const kraftstoffLabels: Record<string, string> = {
+  benzin: 'Benzin',
+  diesel: 'Diesel',
+  elektro: 'Elektro',
+  'hybrid-benzin': 'Hybrid (Benzin)',
+  'hybrid-diesel': 'Hybrid (Diesel)',
+  'plugin-hybrid': 'Plug-in-Hybrid',
+  erdgas: 'Erdgas (CNG)',
+  autogas: 'Autogas (LPG)'
+};
+
+const getriebeLabels: Record<string, string> = {
+  automatik: 'Automatik',
+  schaltung: 'Schaltgetriebe',
+  halbautomatik: 'Halbautomatik'
+};
+
+const statusLabels: Record<string, string> = {
+  verfuegbar: 'Verfügbar',
+  reserviert: 'Reserviert',
+  verkauft: 'Verkauft'
+};
 ---
 
 <Layout title={title} description={description}>
-  <main>
-    <article>
-      <img 
-        src={urlFor(fahrzeug.hauptbild).width(800).height(600).url()} 
-        alt={`${fahrzeug.marke} ${fahrzeug.modell}`}
-      />
+  
+  <!-- Structured Data für Google -->
+  <script type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Car",
+    "name": `${fahrzeug.marke} ${fahrzeug.modell}`,
+    "brand": { "@type": "Brand", "name": fahrzeug.marke },
+    "model": fahrzeug.modell,
+    "vehicleModelDate": fahrzeug.baujahr?.toString(),
+    "mileageFromOdometer": {
+      "@type": "QuantitativeValue",
+      "value": fahrzeug.kilometerstand,
+      "unitCode": "KMT"
+    },
+    "fuelType": fahrzeug.kraftstoff,
+    "vehicleTransmission": fahrzeug.getriebe,
+    "offers": {
+      "@type": "Offer",
+      "price": fahrzeug.preis,
+      "priceCurrency": "EUR",
+      "availability": fahrzeug.status === 'verfuegbar' ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+    },
+    "seller": {
+      "@type": "AutoDealer",
+      "name": "AHAM Automobile",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Nuthedamm 17",
+        "postalCode": "14974",
+        "addressLocality": "Ludwigsfelde",
+        "addressCountry": "DE"
+      }
+    }
+  })} />
+  
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb">
+    <a href="/">Startseite</a>
+    <span>/</span>
+    <a href="/fahrzeuge">Fahrzeuge</a>
+    <span>/</span>
+    <span>{fahrzeug.marke} {fahrzeug.modell}</span>
+  </nav>
+  
+  <!-- Fahrzeug Detail -->
+  <article class="fahrzeug-detail">
+    
+    <!-- Galerie -->
+    <section class="galerie">
+      <div class="hauptbild">
+        {fahrzeug.hauptbild && (
+          <img 
+            src={urlFor(fahrzeug.hauptbild).width(1000).height(700).url()} 
+            alt={`${fahrzeug.marke} ${fahrzeug.modell}`}
+            id="main-image"
+          />
+        )}
+        {fahrzeug.status === 'reserviert' && (
+          <span class="status-badge reserviert">Reserviert</span>
+        )}
+        {fahrzeug.status === 'verkauft' && (
+          <span class="status-badge verkauft">Verkauft</span>
+        )}
+      </div>
       
-      <h1>{fahrzeug.marke} {fahrzeug.modell}</h1>
+      {fahrzeug.galerie && fahrzeug.galerie.length > 0 && (
+        <div class="thumbnails">
+          <button class="thumb active" data-src={urlFor(fahrzeug.hauptbild).width(1000).height(700).url()}>
+            <img src={urlFor(fahrzeug.hauptbild).width(150).height(100).url()} alt="Hauptbild" />
+          </button>
+          {fahrzeug.galerie.map((bild, index) => (
+            <button class="thumb" data-src={urlFor(bild).width(1000).height(700).url()}>
+              <img src={urlFor(bild).width(150).height(100).url()} alt={`Bild ${index + 2}`} />
+            </button>
+          ))}
+        </div>
+      )}
+    </section>
+    
+    <!-- Infos -->
+    <section class="fahrzeug-info">
+      <div class="info-header">
+        <span class="marke">{fahrzeug.marke}</span>
+        <h1>{fahrzeug.modell}</h1>
+        <div class="preis-box">
+          <span class="preis">{fahrzeug.preis?.toLocaleString('de-DE')} €</span>
+          {fahrzeug.mwst && <span class="mwst">inkl. MwSt.</span>}
+          {fahrzeug.preisArt === 'vb' && <span class="preis-art">Verhandlungsbasis</span>}
+        </div>
+      </div>
       
-      <p class="preis">{fahrzeug.preis?.toLocaleString('de-DE')} €</p>
+      <!-- Eckdaten -->
+      <div class="specs-grid">
+        <div class="spec">
+          <span class="spec-label">Erstzulassung</span>
+          <span class="spec-value">{fahrzeug.baujahr}</span>
+        </div>
+        <div class="spec">
+          <span class="spec-label">Kilometerstand</span>
+          <span class="spec-value">{fahrzeug.kilometerstand?.toLocaleString('de-DE')} km</span>
+        </div>
+        <div class="spec">
+          <span class="spec-label">Kraftstoff</span>
+          <span class="spec-value">{kraftstoffLabels[fahrzeug.kraftstoff] || fahrzeug.kraftstoff}</span>
+        </div>
+        <div class="spec">
+          <span class="spec-label">Getriebe</span>
+          <span class="spec-value">{getriebeLabels[fahrzeug.getriebe] || fahrzeug.getriebe}</span>
+        </div>
+        {fahrzeug.leistungPS && (
+          <div class="spec">
+            <span class="spec-label">Leistung</span>
+            <span class="spec-value">{fahrzeug.leistungPS} PS ({Math.round(fahrzeug.leistungPS * 0.7355)} kW)</span>
+          </div>
+        )}
+        {fahrzeug.hubraum && (
+          <div class="spec">
+            <span class="spec-label">Hubraum</span>
+            <span class="spec-value">{fahrzeug.hubraum.toLocaleString('de-DE')} ccm</span>
+          </div>
+        )}
+        {fahrzeug.farbe && (
+          <div class="spec">
+            <span class="spec-label">Farbe</span>
+            <span class="spec-value">{fahrzeug.farbe}</span>
+          </div>
+        )}
+        {fahrzeug.fahrzeugtyp && (
+          <div class="spec">
+            <span class="spec-label">Fahrzeugtyp</span>
+            <span class="spec-value">{fahrzeug.fahrzeugtyp}</span>
+          </div>
+        )}
+      </div>
       
-      <ul>
-        <li>Baujahr: {fahrzeug.baujahr}</li>
-        <li>Kilometerstand: {fahrzeug.kilometerstand?.toLocaleString('de-DE')} km</li>
-        <li>Kraftstoff: {fahrzeug.kraftstoff}</li>
-        <li>Getriebe: {fahrzeug.getriebe}</li>
-        {fahrzeug.leistungPS && <li>Leistung: {fahrzeug.leistungPS} PS</li>}
-      </ul>
-      
+      <!-- Beschreibung -->
       {fahrzeug.beschreibung && (
-        <div>
-          <h2>Beschreibung</h2>
+        <div class="beschreibung">
+          <h3>Beschreibung</h3>
           <p>{fahrzeug.beschreibung}</p>
         </div>
       )}
       
+      <!-- Ausstattung -->
       {fahrzeug.ausstattung && fahrzeug.ausstattung.length > 0 && (
-        <div>
-          <h2>Ausstattung</h2>
+        <div class="ausstattung">
+          <h3>Ausstattung</h3>
           <ul>
             {fahrzeug.ausstattung.map((item) => (
-              <li>{item}</li>
+              <li><span class="check">✓</span> {item}</li>
             ))}
           </ul>
         </div>
       )}
       
-      <a href="tel:01708949479">Jetzt anrufen: 0170 8949479</a>
-    </article>
-  </main>
+      <!-- CTA -->
+      <div class="cta-box">
+        <h3>Interesse an diesem Fahrzeug?</h3>
+        <p>Rufen Sie uns an oder schreiben Sie uns – wir beraten Sie gerne!</p>
+        <div class="cta-buttons">
+          <a href="tel:01708949479" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            0170 8949479
+          </a>
+          <a href="/kontakt" class="btn btn-secondary">Anfrage senden</a>
+        </div>
+      </div>
+    </section>
+    
+  </article>
+  
+  <!-- Ähnliche Fahrzeuge -->
+  {aehnliche && aehnliche.length > 0 && (
+    <section class="section aehnliche-section">
+      <div class="section-header">
+        <h2>Weitere <span>{fahrzeug.marke}</span> Fahrzeuge</h2>
+      </div>
+      <div class="aehnliche-grid">
+        {aehnliche.map((f: Fahrzeug) => (
+          <FahrzeugCard fahrzeug={f} />
+        ))}
+      </div>
+    </section>
+  )}
+  
 </Layout>
+
+<script>
+  // Simple image gallery
+  document.querySelectorAll('.thumb').forEach(thumb => {
+    thumb.addEventListener('click', () => {
+      const mainImage = document.getElementById('main-image') as HTMLImageElement;
+      const src = thumb.getAttribute('data-src');
+      if (mainImage && src) {
+        mainImage.src = src;
+        document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+      }
+    });
+  });
+</script>
+
+<style>
+  .breadcrumb {
+    padding: 100px 60px 20px;
+    font-size: 0.85rem;
+    color: var(--gray);
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  .breadcrumb a {
+    color: var(--gray);
+    transition: color 0.3s ease;
+  }
+  
+  .breadcrumb a:hover {
+    color: var(--olive);
+  }
+  
+  .breadcrumb span {
+    margin: 0 10px;
+  }
+  
+  .fahrzeug-detail {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 60px;
+    padding: 20px 60px 80px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  /* Galerie */
+  .galerie {
+    position: sticky;
+    top: 100px;
+    height: fit-content;
+  }
+  
+  .hauptbild {
+    position: relative;
+    margin-bottom: 15px;
+  }
+  
+  .hauptbild img {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+  
+  .status-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .status-badge.reserviert {
+    background: #E6A23C;
+    color: white;
+  }
+  
+  .status-badge.verkauft {
+    background: #F56C6C;
+    color: white;
+  }
+  
+  .thumbnails {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .thumb {
+    border: 2px solid transparent;
+    padding: 0;
+    cursor: pointer;
+    background: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  .thumb img {
+    width: 80px;
+    height: 60px;
+    object-fit: cover;
+  }
+  
+  .thumb.active,
+  .thumb:hover {
+    border-color: var(--olive);
+  }
+  
+  /* Info Section */
+  .info-header {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid var(--gray-light);
+  }
+  
+  .marke {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--olive);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  
+  .fahrzeug-info h1 {
+    margin-bottom: 20px;
+  }
+  
+  .preis-box {
+    display: flex;
+    align-items: baseline;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  
+  .preis {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--olive);
+  }
+  
+  .mwst,
+  .preis-art {
+    font-size: 0.85rem;
+    color: var(--gray);
+  }
+  
+  /* Specs Grid */
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 40px;
+    padding: 30px;
+    background: var(--cream);
+  }
+  
+  .spec {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .spec-label {
+    font-size: 0.75rem;
+    color: var(--gray);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .spec-value {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  
+  /* Beschreibung & Ausstattung */
+  .beschreibung,
+  .ausstattung {
+    margin-bottom: 40px;
+  }
+  
+  .beschreibung h3,
+  .ausstattung h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+  }
+  
+  .beschreibung p {
+    color: var(--gray-dark);
+    line-height: 1.8;
+  }
+  
+  .ausstattung ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  
+  .ausstattung li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .ausstattung .check {
+    color: var(--olive);
+    font-weight: bold;
+  }
+  
+  /* CTA Box */
+  .cta-box {
+    background: var(--black);
+    color: var(--white);
+    padding: 30px;
+  }
+  
+  .cta-box h3 {
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+  
+  .cta-box p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 20px;
+  }
+  
+  .cta-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+  }
+  
+  .cta-box .btn-primary {
+    background: var(--olive);
+    border-color: var(--olive);
+  }
+  
+  .cta-box .btn-secondary {
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--white);
+  }
+  
+  .cta-box .btn-secondary:hover {
+    border-color: var(--white);
+  }
+  
+  /* Ähnliche Fahrzeuge */
+  .aehnliche-section {
+    background: var(--cream);
+  }
+  
+  .aehnliche-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .fahrzeug-detail {
+      grid-template-columns: 1fr;
+      padding: 20px 20px 60px;
+    }
+    
+    .galerie {
+      position: static;
+    }
+    
+    .aehnliche-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .breadcrumb {
+      padding: 100px 20px 20px;
+    }
+    
+    .specs-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .ausstattung ul {
+      grid-template-columns: 1fr;
+    }
+    
+    .cta-buttons {
+      flex-direction: column;
+    }
+    
+    .cta-buttons .btn {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    .aehnliche-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
