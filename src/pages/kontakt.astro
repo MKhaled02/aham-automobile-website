@@ -2,82 +2,176 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout 
-  title="Kontakt | AHAM Automobile"
-  description="Kontaktiere AHAM Automobile in Ludwigsfelde."
->
+<Layout title="Kontakt | AHAM Automobile">
   
-  <section class="kontakt-hero">
-    <div class="hero-bg"></div>
-    <div class="kontakt-hero-content">
-      <span class="section-label">Get in Touch</span>
-      <h1>KONTAKT<span class="text-red">IERE UNS</span></h1>
+  <section class="contact-hero">
+    <div class="hero-content">
+      <span class="label">Kontakt</span>
+      <h1>Wir freuen uns auf <span class="italic text-gold">Sie</span></h1>
+      <p>Persönliche Beratung nach Vereinbarung</p>
     </div>
   </section>
   
-  <section class="kontakt-main">
-    <div class="kontakt-info">
-      <div class="info-card">
-        <span class="info-icon">📍</span>
-        <h3>STANDORT</h3>
-        <p>
-          AHAM Automobile<br>
+  <section class="contact-main">
+    <div class="contact-info">
+      <div class="info-block">
+        <span class="label">Telefon</span>
+        <a href="tel:01708949479" class="info-value phone">0170 894 9479</a>
+        <p class="info-note">Wir sind gerne für Sie da</p>
+      </div>
+      
+      <div class="info-block">
+        <span class="label">Standort</span>
+        <address class="info-value">
           Nuthedamm 17<br>
           14974 Ludwigsfelde<br>
-          <span class="highlight">Preussen Park</span>
-        </p>
-        <a href="https://maps.google.com/?q=Nuthedamm+17+14974+Ludwigsfelde" target="_blank" class="info-link">Route planen →</a>
+          <span class="text-gold">Preussen Park</span>
+        </address>
+        <a href="https://maps.google.com/?q=Nuthedamm+17+14974+Ludwigsfelde" target="_blank" class="info-link">
+          Route planen →
+        </a>
       </div>
       
-      <div class="info-card featured">
-        <span class="info-icon">📞</span>
-        <h3>TELEFON</h3>
-        <a href="tel:01708949479" class="phone-link">0170 8949479</a>
-        <p>Ruf einfach an!</p>
-      </div>
-      
-      <div class="info-card">
-        <span class="info-icon">🕐</span>
-        <h3>ÖFFNUNGSZEITEN</h3>
-        <p><strong>Donnerstag:</strong> 10:00 – 18:00 Uhr<br><strong>Sonst:</strong> Nach Vereinbarung</p>
+      <div class="info-block">
+        <span class="label">Öffnungszeiten</span>
+        <div class="info-value hours">
+          <p><strong>Donnerstag</strong> 10:00 – 18:00 Uhr</p>
+          <p>Weitere Termine nach Vereinbarung</p>
+        </div>
       </div>
     </div>
     
-    <div class="kontakt-map">
-      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2437.5!2d13.2547!3d52.3019!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTLCsDE4JzA2LjgiTiAxM8KwMTUnMTYuOSJF!5e0!3m2!1sde!2sde!4v1" width="100%" height="100%" style="border:0;" loading="lazy" title="Standort"></iframe>
+    <div class="contact-map">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2437.5!2d13.2547!3d52.3019!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTLCsDE4JzA2LjgiTiAxM8KwMTUnMTYuOSJF!5e0!3m2!1sde!2sde!4v1" 
+        width="100%" 
+        height="100%" 
+        style="border:0;" 
+        loading="lazy"
+        title="Standort"
+      ></iframe>
     </div>
   </section>
   
 </Layout>
 
 <style>
-  .kontakt-hero { position: relative; padding: 180px 60px 100px; text-align: center; }
-  .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--black-light); z-index: 0; }
-  .hero-bg::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, var(--red-glow), transparent 70%); opacity: 0.3; }
-  .kontakt-hero-content { position: relative; z-index: 1; }
-  .kontakt-hero h1 { font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem); }
-  .text-red { color: var(--red); }
-  .kontakt-main { display: grid; grid-template-columns: 1fr 1.5fr; min-height: 600px; }
-  .kontakt-info { background: var(--black-card); padding: 60px; display: flex; flex-direction: column; }
-  .info-card { padding: 40px 0; border-bottom: 1px solid var(--gray-light); }
-  .info-card:last-child { border-bottom: none; }
-  .info-card.featured { background: linear-gradient(135deg, var(--red-dark), var(--black)); margin: 0 -60px; padding: 40px 60px; border: none; }
-  .info-icon { font-size: 2rem; margin-bottom: 15px; display: block; }
-  .info-card h3 { font-family: var(--font-heading); font-size: 0.9rem; letter-spacing: 0.2em; color: var(--red); margin-bottom: 15px; }
-  .info-card.featured h3 { color: var(--white); }
-  .info-card p { color: var(--gray); line-height: 1.8; }
-  .info-card.featured p { color: rgba(255,255,255,0.7); }
-  .highlight { color: var(--red); font-weight: 600; }
-  .phone-link { font-family: var(--font-display); font-size: 2.5rem; color: var(--white); display: block; margin-bottom: 10px; }
-  .phone-link:hover { text-shadow: 0 0 30px var(--red-glow); }
-  .info-link { display: inline-block; margin-top: 15px; color: var(--red); font-family: var(--font-heading); font-weight: 600; }
-  .kontakt-map { background: var(--gray-light); }
-  .kontakt-map iframe { filter: grayscale(100%) contrast(1.2); }
+  .contact-hero {
+    padding: 180px var(--space-lg) 80px;
+    background: var(--charcoal);
+  }
+  
+  .hero-content {
+    max-width: 600px;
+  }
+  
+  .contact-hero h1 {
+    margin: var(--space-sm) 0;
+  }
+  
+  .contact-main {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    min-height: 600px;
+  }
+  
+  .contact-info {
+    background: var(--obsidian);
+    padding: var(--space-xl) var(--space-lg);
+  }
+  
+  .info-block {
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--graphite);
+  }
+  
+  .info-block:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  
+  .info-value {
+    display: block;
+    margin: var(--space-sm) 0;
+  }
+  
+  .info-value.phone {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    color: var(--ivory);
+    transition: color 0.3s ease;
+  }
+  
+  .info-value.phone:hover {
+    color: var(--gold);
+  }
+  
+  .info-value address {
+    font-style: normal;
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--pearl);
+  }
+  
+  .info-value.hours p {
+    margin-bottom: 8px;
+    color: var(--pearl);
+  }
+  
+  .info-value.hours strong {
+    color: var(--ivory);
+  }
+  
+  .info-note {
+    font-size: 0.9rem;
+    color: var(--silver);
+    font-style: italic;
+  }
+  
+  .info-link {
+    display: inline-block;
+    font-family: var(--font-headline);
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    transition: opacity 0.3s ease;
+  }
+  
+  .info-link:hover {
+    opacity: 0.7;
+  }
+  
+  .contact-map {
+    background: var(--slate);
+  }
+  
+  .contact-map iframe {
+    filter: grayscale(100%) brightness(0.7) contrast(1.1);
+    transition: filter 0.5s ease;
+  }
+  
+  .contact-map:hover iframe {
+    filter: grayscale(50%) brightness(0.8) contrast(1.1);
+  }
+  
   @media (max-width: 968px) {
-    .kontakt-hero { padding: 140px 20px 60px; }
-    .kontakt-main { grid-template-columns: 1fr; }
-    .kontakt-info { padding: 40px 20px; }
-    .info-card.featured { margin: 0 -20px; padding: 40px 20px; }
-    .kontakt-map { height: 400px; }
+    .contact-hero {
+      padding: 150px var(--space-md) 60px;
+    }
+    
+    .contact-main {
+      grid-template-columns: 1fr;
+    }
+    
+    .contact-info {
+      padding: var(--space-lg) var(--space-md);
+    }
+    
+    .contact-map {
+      height: 400px;
+    }
   }
 </style>

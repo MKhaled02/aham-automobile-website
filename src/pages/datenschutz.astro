@@ -3,35 +3,39 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout title="Datenschutz | AHAM Automobile">
-  <article class="legal-page">
-    <h1>DATENSCHUTZ</h1>
+  <article class="legal">
+    <header>
+      <span class="label">Rechtliches</span>
+      <h1>Datenschutz</h1>
+    </header>
     
     <section>
       <h2>1. Datenschutz auf einen Blick</h2>
-      <p>Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen.</p>
+      <p>Die folgenden Hinweise geben einen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen.</p>
     </section>
     
     <section>
       <h2>2. Verantwortliche Stelle</h2>
-      <p>AHAM Automobile<br>Nuthedamm 17<br>14974 Ludwigsfelde<br>Telefon: 0170 8949479</p>
+      <p>AHAM Automobile<br>Nuthedamm 17<br>14974 Ludwigsfelde<br>Telefon: 0170 894 9479</p>
     </section>
     
     <section>
       <h2>3. Datenerfassung</h2>
-      <p>Der Provider der Seiten erhebt und speichert automatisch Informationen in Server-Log-Dateien, die Ihr Browser automatisch übermittelt. Dies sind: Browsertyp und -version, verwendetes Betriebssystem, Referrer URL, Hostname des zugreifenden Rechners, Uhrzeit der Serveranfrage, IP-Adresse.</p>
+      <p>Der Provider erhebt automatisch Informationen in Server-Log-Dateien: Browsertyp, Betriebssystem, Referrer URL, Hostname, Uhrzeit und IP-Adresse.</p>
     </section>
     
     <section>
       <h2>4. Ihre Rechte</h2>
-      <p>Sie haben jederzeit das Recht, unentgeltlich Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten zu erhalten.</p>
+      <p>Sie haben jederzeit das Recht auf Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten Daten.</p>
     </section>
   </article>
 </Layout>
 
 <style>
-  .legal-page { max-width: 800px; margin: 0 auto; padding: 150px 20px 80px; }
-  .legal-page h1 { font-family: var(--font-display); font-size: clamp(2.5rem, 5vw, 4rem); margin-bottom: 40px; padding-bottom: 20px; border-bottom: 3px solid var(--red); }
-  .legal-page section { margin-bottom: 40px; }
-  .legal-page h2 { font-family: var(--font-heading); font-size: 1.1rem; letter-spacing: 0.1em; margin-bottom: 15px; color: var(--red); }
-  .legal-page p { color: var(--gray); line-height: 1.8; margin-bottom: 15px; }
+  .legal { max-width: 700px; margin: 0 auto; padding: 180px var(--space-md) var(--space-xl); }
+  .legal header { margin-bottom: var(--space-lg); }
+  .legal h1 { margin-top: var(--space-sm); }
+  .legal section { margin-bottom: var(--space-lg); }
+  .legal h2 { font-family: var(--font-headline); font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: var(--space-sm); }
+  .legal p { line-height: 1.9; }
 </style>

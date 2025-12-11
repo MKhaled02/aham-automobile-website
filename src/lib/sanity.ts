@@ -9,7 +9,7 @@ export const client = createClient({
   useCdn: true,
   apiVersion: '2024-01-01',
   token: import.meta.env.SANITY_API_TOKEN  // ← Diese Zeile hinzufügen
-,
+
 });
 
 // Bild URL Builder

@@ -4,10 +4,8 @@ import FahrzeugCard from '../../components/FahrzeugCard.astro';
 import { getAlleFahrzeugSlugs, getFahrzeugBySlug, getAehnlicheFahrzeuge, urlFor } from '../../lib/sanity';
 import type { Fahrzeug } from '../../types/sanity';
 
-// Generiert alle Seiten bei Build-Time
 export async function getStaticPaths() {
   const slugs = await getAlleFahrzeugSlugs();
-  
   return slugs
     .filter((item: { slug: string }) => item.slug)
     .map((item: { slug: string }) => ({
@@ -18,226 +16,159 @@ export async function getStaticPaths() {
 const { slug } = Astro.params;
 const fahrzeug: Fahrzeug = await getFahrzeugBySlug(slug!);
 
-// 404 wenn nicht gefunden
 if (!fahrzeug) {
   return Astro.redirect('/404');
 }
 
-// Ähnliche Fahrzeuge laden
 const aehnliche = await getAehnlicheFahrzeuge(fahrzeug.marke, fahrzeug._id);
 
-// SEO Daten
-const title = `${fahrzeug.marke} ${fahrzeug.modell} (${fahrzeug.baujahr}) | AHAM Automobile`;
-const description = `${fahrzeug.marke} ${fahrzeug.modell} mit ${fahrzeug.kilometerstand?.toLocaleString('de-DE')} km für ${fahrzeug.preis?.toLocaleString('de-DE')}€ in Ludwigsfelde kaufen.`;
+const title = `${fahrzeug.marke} ${fahrzeug.modell} | AHAM Automobile`;
 
-// Labels
 const kraftstoffLabels: Record<string, string> = {
-  benzin: 'Benzin',
-  diesel: 'Diesel',
-  elektro: 'Elektro',
-  'hybrid-benzin': 'Hybrid (Benzin)',
-  'hybrid-diesel': 'Hybrid (Diesel)',
-  'plugin-hybrid': 'Plug-in-Hybrid',
-  erdgas: 'Erdgas (CNG)',
-  autogas: 'Autogas (LPG)'
+  benzin: 'Benzin', diesel: 'Diesel', elektro: 'Elektro',
+  'hybrid-benzin': 'Hybrid', 'hybrid-diesel': 'Hybrid', 'plugin-hybrid': 'Plug-in-Hybrid'
 };
 
 const getriebeLabels: Record<string, string> = {
-  automatik: 'Automatik',
-  schaltung: 'Schaltgetriebe',
-  halbautomatik: 'Halbautomatik'
-};
-
-const statusLabels: Record<string, string> = {
-  verfuegbar: 'Verfügbar',
-  reserviert: 'Reserviert',
-  verkauft: 'Verkauft'
+  automatik: 'Automatik', schaltung: 'Schaltgetriebe', halbautomatik: 'Halbautomatik'
 };
 ---
 
-<Layout title={title} description={description}>
-  
-  <!-- Structured Data für Google -->
-  <script type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Car",
-    "name": `${fahrzeug.marke} ${fahrzeug.modell}`,
-    "brand": { "@type": "Brand", "name": fahrzeug.marke },
-    "model": fahrzeug.modell,
-    "vehicleModelDate": fahrzeug.baujahr?.toString(),
-    "mileageFromOdometer": {
-      "@type": "QuantitativeValue",
-      "value": fahrzeug.kilometerstand,
-      "unitCode": "KMT"
-    },
-    "fuelType": fahrzeug.kraftstoff,
-    "vehicleTransmission": fahrzeug.getriebe,
-    "offers": {
-      "@type": "Offer",
-      "price": fahrzeug.preis,
-      "priceCurrency": "EUR",
-      "availability": fahrzeug.status === 'verfuegbar' ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
-    },
-    "seller": {
-      "@type": "AutoDealer",
-      "name": "AHAM Automobile",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Nuthedamm 17",
-        "postalCode": "14974",
-        "addressLocality": "Ludwigsfelde",
-        "addressCountry": "DE"
-      }
-    }
-  })} />
+<Layout title={title}>
   
   <!-- Breadcrumb -->
   <nav class="breadcrumb">
-    <a href="/">Startseite</a>
-    <span>/</span>
-    <a href="/fahrzeuge">Fahrzeuge</a>
-    <span>/</span>
-    <span>{fahrzeug.marke} {fahrzeug.modell}</span>
+    <a href="/">Start</a>
+    <span>—</span>
+    <a href="/fahrzeuge">Kollektion</a>
+    <span>—</span>
+    <span class="current">{fahrzeug.marke} {fahrzeug.modell}</span>
   </nav>
   
-  <!-- Fahrzeug Detail -->
-  <article class="fahrzeug-detail">
+  <!-- Vehicle Detail -->
+  <article class="vehicle-detail">
     
-    <!-- Galerie -->
-    <section class="galerie">
-      <div class="hauptbild">
+    <!-- Gallery -->
+    <section class="gallery">
+      <div class="gallery-main">
         {fahrzeug.hauptbild && (
           <img 
-            src={urlFor(fahrzeug.hauptbild).width(1000).height(700).url()} 
+            src={urlFor(fahrzeug.hauptbild).width(1200).height(800).url()} 
             alt={`${fahrzeug.marke} ${fahrzeug.modell}`}
             id="main-image"
           />
         )}
         {fahrzeug.status === 'reserviert' && (
-          <span class="status-badge reserviert">Reserviert</span>
-        )}
-        {fahrzeug.status === 'verkauft' && (
-          <span class="status-badge verkauft">Verkauft</span>
+          <span class="vehicle-status">Reserviert</span>
         )}
       </div>
       
       {fahrzeug.galerie && fahrzeug.galerie.length > 0 && (
-        <div class="thumbnails">
-          <button class="thumb active" data-src={urlFor(fahrzeug.hauptbild).width(1000).height(700).url()}>
-            <img src={urlFor(fahrzeug.hauptbild).width(150).height(100).url()} alt="Hauptbild" />
+        <div class="gallery-thumbs">
+          <button class="thumb active" data-src={urlFor(fahrzeug.hauptbild).width(1200).height(800).url()}>
+            <img src={urlFor(fahrzeug.hauptbild).width(200).height(150).url()} alt="Hauptbild" />
           </button>
-          {fahrzeug.galerie.map((bild, index) => (
-            <button class="thumb" data-src={urlFor(bild).width(1000).height(700).url()}>
-              <img src={urlFor(bild).width(150).height(100).url()} alt={`Bild ${index + 2}`} />
+          {fahrzeug.galerie.map((bild, i) => (
+            <button class="thumb" data-src={urlFor(bild).width(1200).height(800).url()}>
+              <img src={urlFor(bild).width(200).height(150).url()} alt={`Bild ${i + 2}`} />
             </button>
           ))}
         </div>
       )}
     </section>
     
-    <!-- Infos -->
-    <section class="fahrzeug-info">
+    <!-- Info -->
+    <section class="vehicle-info">
       <div class="info-header">
-        <span class="marke">{fahrzeug.marke}</span>
+        <span class="label">{fahrzeug.marke}</span>
         <h1>{fahrzeug.modell}</h1>
-        <div class="preis-box">
-          <span class="preis">{fahrzeug.preis?.toLocaleString('de-DE')} €</span>
-          {fahrzeug.mwst && <span class="mwst">inkl. MwSt.</span>}
-          {fahrzeug.preisArt === 'vb' && <span class="preis-art">Verhandlungsbasis</span>}
-        </div>
+        <span class="vehicle-year">{fahrzeug.baujahr}</span>
       </div>
       
-      <!-- Eckdaten -->
-      <div class="specs-grid">
-        <div class="spec">
-          <span class="spec-label">Erstzulassung</span>
-          <span class="spec-value">{fahrzeug.baujahr}</span>
-        </div>
-        <div class="spec">
+      <div class="info-price">
+        <span class="price-amount">{fahrzeug.preis?.toLocaleString('de-DE')}</span>
+        <span class="price-currency">EUR</span>
+        {fahrzeug.mwst && <span class="price-vat">inkl. MwSt.</span>}
+      </div>
+      
+      <div class="info-specs">
+        <div class="spec-row">
           <span class="spec-label">Kilometerstand</span>
           <span class="spec-value">{fahrzeug.kilometerstand?.toLocaleString('de-DE')} km</span>
         </div>
-        <div class="spec">
+        <div class="spec-row">
           <span class="spec-label">Kraftstoff</span>
           <span class="spec-value">{kraftstoffLabels[fahrzeug.kraftstoff] || fahrzeug.kraftstoff}</span>
         </div>
-        <div class="spec">
+        <div class="spec-row">
           <span class="spec-label">Getriebe</span>
           <span class="spec-value">{getriebeLabels[fahrzeug.getriebe] || fahrzeug.getriebe}</span>
         </div>
         {fahrzeug.leistungPS && (
-          <div class="spec">
+          <div class="spec-row">
             <span class="spec-label">Leistung</span>
             <span class="spec-value">{fahrzeug.leistungPS} PS ({Math.round(fahrzeug.leistungPS * 0.7355)} kW)</span>
           </div>
         )}
         {fahrzeug.hubraum && (
-          <div class="spec">
+          <div class="spec-row">
             <span class="spec-label">Hubraum</span>
             <span class="spec-value">{fahrzeug.hubraum.toLocaleString('de-DE')} ccm</span>
           </div>
         )}
         {fahrzeug.farbe && (
-          <div class="spec">
+          <div class="spec-row">
             <span class="spec-label">Farbe</span>
             <span class="spec-value">{fahrzeug.farbe}</span>
           </div>
         )}
         {fahrzeug.fahrzeugtyp && (
-          <div class="spec">
-            <span class="spec-label">Fahrzeugtyp</span>
+          <div class="spec-row">
+            <span class="spec-label">Typ</span>
             <span class="spec-value">{fahrzeug.fahrzeugtyp}</span>
           </div>
         )}
       </div>
       
-      <!-- Beschreibung -->
-      {fahrzeug.beschreibung && (
-        <div class="beschreibung">
-          <h3>Beschreibung</h3>
-          <p>{fahrzeug.beschreibung}</p>
-        </div>
-      )}
-      
-      <!-- Ausstattung -->
       {fahrzeug.ausstattung && fahrzeug.ausstattung.length > 0 && (
-        <div class="ausstattung">
+        <div class="info-features">
           <h3>Ausstattung</h3>
           <ul>
             {fahrzeug.ausstattung.map((item) => (
-              <li><span class="check">✓</span> {item}</li>
+              <li>{item}</li>
             ))}
           </ul>
         </div>
       )}
       
-      <!-- CTA -->
-      <div class="cta-box">
-        <h3>Interesse an diesem Fahrzeug?</h3>
-        <p>Rufen Sie uns an oder schreiben Sie uns – wir beraten Sie gerne!</p>
-        <div class="cta-buttons">
-          <a href="tel:01708949479" class="btn btn-primary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-            </svg>
-            0170 8949479
-          </a>
-          <a href="/kontakt" class="btn btn-secondary">Anfrage senden</a>
+      {fahrzeug.beschreibung && (
+        <div class="info-description">
+          <h3>Beschreibung</h3>
+          <p>{fahrzeug.beschreibung}</p>
         </div>
+      )}
+      
+      <div class="info-cta">
+        <p>Interesse an diesem Fahrzeug?</p>
+        <a href="tel:01708949479" class="btn btn-primary">
+          Jetzt anrufen — 0170 894 9479
+        </a>
+        <a href="/kontakt" class="btn btn-ghost">Anfrage senden</a>
       </div>
     </section>
     
   </article>
   
-  <!-- Ähnliche Fahrzeuge -->
+  <!-- Similar Vehicles -->
   {aehnliche && aehnliche.length > 0 && (
-    <section class="section aehnliche-section">
-      <div class="section-header">
-        <h2>Weitere <span>{fahrzeug.marke}</span> Fahrzeuge</h2>
+    <section class="section similar">
+      <div class="similar-header">
+        <span class="label">Weitere Empfehlungen</span>
+        <h2>Ähnliche <span class="italic text-gold">Fahrzeuge</span></h2>
       </div>
-      <div class="aehnliche-grid">
-        {aehnliche.map((f: Fahrzeug) => (
-          <FahrzeugCard fahrzeug={f} />
+      <div class="similar-grid">
+        {aehnliche.map((f: Fahrzeug, i: number) => (
+          <FahrzeugCard fahrzeug={f} index={i} />
         ))}
       </div>
     </section>
@@ -246,7 +177,6 @@ const statusLabels: Record<string, string> = {
 </Layout>
 
 <script>
-  // Simple image gallery
   document.querySelectorAll('.thumb').forEach(thumb => {
     thumb.addEventListener('click', () => {
       const mainImage = document.getElementById('main-image') as HTMLImageElement;
@@ -262,292 +192,253 @@ const statusLabels: Record<string, string> = {
 
 <style>
   .breadcrumb {
-    padding: 100px 60px 20px;
-    font-size: 0.85rem;
-    color: var(--gray);
-    max-width: 1400px;
-    margin: 0 auto;
+    padding: 120px var(--space-lg) var(--space-md);
+    font-size: 0.8rem;
+    color: var(--silver);
+    display: flex;
+    align-items: center;
+    gap: 15px;
   }
   
   .breadcrumb a {
-    color: var(--gray);
+    color: var(--silver);
     transition: color 0.3s ease;
   }
   
   .breadcrumb a:hover {
-    color: var(--olive);
+    color: var(--gold);
   }
   
-  .breadcrumb span {
-    margin: 0 10px;
+  .breadcrumb .current {
+    color: var(--pearl);
   }
   
-  .fahrzeug-detail {
+  .vehicle-detail {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 60px;
-    padding: 20px 60px 80px;
-    max-width: 1400px;
-    margin: 0 auto;
+    grid-template-columns: 1.3fr 1fr;
+    gap: var(--space-lg);
+    padding: 0 var(--space-lg) var(--space-xl);
   }
   
-  /* Galerie */
-  .galerie {
-    position: sticky;
-    top: 100px;
-    height: fit-content;
-  }
-  
-  .hauptbild {
+  /* Gallery */
+  .gallery-main {
     position: relative;
-    margin-bottom: 15px;
+    margin-bottom: var(--space-sm);
   }
   
-  .hauptbild img {
+  .gallery-main img {
     width: 100%;
     height: auto;
-    border-radius: 4px;
   }
   
-  .status-badge {
+  .vehicle-status {
     position: absolute;
     top: 20px;
     left: 20px;
-    padding: 10px 20px;
-    font-size: 0.85rem;
+    font-family: var(--font-headline);
+    font-size: 0.65rem;
     font-weight: 600;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--obsidian);
   }
   
-  .status-badge.reserviert {
-    background: #E6A23C;
-    color: white;
-  }
-  
-  .status-badge.verkauft {
-    background: #F56C6C;
-    color: white;
-  }
-  
-  .thumbnails {
+  .gallery-thumbs {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
   }
   
   .thumb {
-    border: 2px solid transparent;
+    border: 1px solid var(--slate);
+    background: none;
     padding: 0;
     cursor: pointer;
-    background: none;
     transition: border-color 0.3s ease;
+    overflow: hidden;
   }
   
   .thumb img {
     width: 80px;
     height: 60px;
     object-fit: cover;
+    transition: opacity 0.3s ease;
   }
   
-  .thumb.active,
-  .thumb:hover {
-    border-color: var(--olive);
+  .thumb:hover,
+  .thumb.active {
+    border-color: var(--gold);
   }
   
-  /* Info Section */
+  /* Info */
+  .vehicle-info {
+    padding-top: var(--space-md);
+  }
+  
   .info-header {
-    margin-bottom: 30px;
-    padding-bottom: 30px;
-    border-bottom: 1px solid var(--gray-light);
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--slate);
   }
   
-  .marke {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    color: var(--olive);
-    text-transform: uppercase;
-    margin-bottom: 5px;
+  .info-header h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin: 10px 0;
   }
   
-  .fahrzeug-info h1 {
-    margin-bottom: 20px;
+  .vehicle-year {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--silver);
   }
   
-  .preis-box {
+  .info-price {
     display: flex;
     align-items: baseline;
-    gap: 15px;
-    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: var(--space-md);
   }
   
-  .preis {
+  .price-amount {
     font-family: var(--font-display);
     font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--olive);
+    color: var(--gold);
   }
   
-  .mwst,
-  .preis-art {
+  .price-currency {
+    font-family: var(--font-headline);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: var(--silver);
+  }
+  
+  .price-vat {
     font-size: 0.85rem;
-    color: var(--gray);
+    color: var(--silver);
   }
   
-  /* Specs Grid */
-  .specs-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-bottom: 40px;
-    padding: 30px;
-    background: var(--cream);
+  .info-specs {
+    margin-bottom: var(--space-md);
   }
   
-  .spec {
+  .spec-row {
     display: flex;
-    flex-direction: column;
-    gap: 5px;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--graphite);
   }
   
   .spec-label {
-    font-size: 0.75rem;
-    color: var(--gray);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 0.9rem;
+    color: var(--silver);
   }
   
   .spec-value {
+    font-size: 0.95rem;
+    color: var(--ivory);
+  }
+  
+  .info-features,
+  .info-description {
+    margin-bottom: var(--space-md);
+  }
+  
+  .info-features h3,
+  .info-description h3 {
+    font-family: var(--font-headline);
+    font-size: 0.7rem;
     font-weight: 600;
-    font-size: 1rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: var(--space-sm);
   }
   
-  /* Beschreibung & Ausstattung */
-  .beschreibung,
-  .ausstattung {
-    margin-bottom: 40px;
+  .info-features ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
   }
   
-  .beschreibung h3,
-  .ausstattung h3 {
-    font-size: 1.3rem;
-    margin-bottom: 15px;
+  .info-features li {
+    font-size: 0.9rem;
+    color: var(--pearl);
+    padding-left: 15px;
+    position: relative;
   }
   
-  .beschreibung p {
-    color: var(--gray-dark);
+  .info-features li::before {
+    content: '—';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+  }
+  
+  .info-description p {
+    font-size: 0.95rem;
     line-height: 1.8;
   }
   
-  .ausstattung ul {
-    list-style: none;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+  .info-cta {
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--slate);
   }
   
-  .ausstattung li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .info-cta p {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.1rem;
+    margin-bottom: var(--space-sm);
   }
   
-  .ausstattung .check {
-    color: var(--olive);
-    font-weight: bold;
+  .info-cta .btn {
+    display: block;
+    margin-bottom: 15px;
   }
   
-  /* CTA Box */
-  .cta-box {
-    background: var(--black);
-    color: var(--white);
-    padding: 30px;
+  /* Similar */
+  .similar {
+    background: var(--charcoal);
   }
   
-  .cta-box h3 {
-    color: var(--white);
-    margin-bottom: 10px;
+  .similar-header {
+    margin-bottom: var(--space-lg);
   }
   
-  .cta-box p {
-    color: rgba(255, 255, 255, 0.7);
-    margin-bottom: 20px;
+  .similar-header h2 {
+    margin-top: var(--space-sm);
   }
   
-  .cta-buttons {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-  }
-  
-  .cta-box .btn-primary {
-    background: var(--olive);
-    border-color: var(--olive);
-  }
-  
-  .cta-box .btn-secondary {
-    border-color: rgba(255, 255, 255, 0.3);
-    color: var(--white);
-  }
-  
-  .cta-box .btn-secondary:hover {
-    border-color: var(--white);
-  }
-  
-  /* Ähnliche Fahrzeuge */
-  .aehnliche-section {
-    background: var(--cream);
-  }
-  
-  .aehnliche-grid {
+  .similar-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    max-width: 1400px;
-    margin: 0 auto;
+    gap: var(--space-md);
   }
   
-  /* Responsive */
   @media (max-width: 1024px) {
-    .fahrzeug-detail {
+    .vehicle-detail {
       grid-template-columns: 1fr;
-      padding: 20px 20px 60px;
+      padding: 0 var(--space-md) var(--space-lg);
     }
     
-    .galerie {
-      position: static;
+    .breadcrumb {
+      padding: 120px var(--space-md) var(--space-sm);
     }
     
-    .aehnliche-grid {
+    .similar-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
   
   @media (max-width: 768px) {
-    .breadcrumb {
-      padding: 100px 20px 20px;
-    }
-    
-    .specs-grid {
+    .info-features ul {
       grid-template-columns: 1fr;
     }
     
-    .ausstattung ul {
-      grid-template-columns: 1fr;
-    }
-    
-    .cta-buttons {
-      flex-direction: column;
-    }
-    
-    .cta-buttons .btn {
-      width: 100%;
-      justify-content: center;
-    }
-    
-    .aehnliche-grid {
+    .similar-grid {
       grid-template-columns: 1fr;
     }
   }

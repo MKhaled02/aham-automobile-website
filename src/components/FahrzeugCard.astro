@@ -4,17 +4,10 @@ import type { Fahrzeug } from '../types/sanity';
 
 interface Props {
   fahrzeug: Fahrzeug;
+  index?: number;
 }
 
-const { fahrzeug } = Astro.props;
-
-const badgeLabels: Record<string, string> = {
-  neu: 'NEU',
-  top: 'TOP DEAL',
-  reduziert: 'REDUZIERT',
-  garantie: 'GARANTIE',
-  tuev: 'TÜV NEU'
-};
+const { fahrzeug, index = 0 } = Astro.props;
 
 const kraftstoffLabels: Record<string, string> = {
   benzin: 'Benzin',
@@ -22,94 +15,96 @@ const kraftstoffLabels: Record<string, string> = {
   elektro: 'Elektro',
   'hybrid-benzin': 'Hybrid',
   'hybrid-diesel': 'Hybrid',
-  'plugin-hybrid': 'Plug-in'
+  'plugin-hybrid': 'Plug-in-Hybrid'
 };
 ---
 
-<a href={`/fahrzeuge/${fahrzeug.slug}`} class="fahrzeug-card">
+<a 
+  href={`/fahrzeuge/${fahrzeug.slug}`} 
+  class="vehicle-card"
+  style={`animation-delay: ${index * 0.1}s`}
+>
   <div class="card-image">
     {fahrzeug.hauptbild && (
       <img 
-        src={urlFor(fahrzeug.hauptbild).width(600).height(400).url()} 
+        src={urlFor(fahrzeug.hauptbild).width(800).height(600).url()} 
         alt={`${fahrzeug.marke} ${fahrzeug.modell}`}
         loading="lazy"
       />
     )}
     <div class="card-overlay"></div>
-    {fahrzeug.badge && (
-      <span class="badge">{badgeLabels[fahrzeug.badge] || fahrzeug.badge}</span>
-    )}
+    
     {fahrzeug.status === 'reserviert' && (
-      <span class="badge badge-reserved">RESERVIERT</span>
+      <span class="card-status reserved">Reserviert</span>
     )}
-    <div class="card-quick-stats">
-      <span>{fahrzeug.baujahr}</span>
-      <span class="stat-divider">|</span>
-      <span>{fahrzeug.kilometerstand?.toLocaleString('de-DE')} km</span>
-      <span class="stat-divider">|</span>
-      <span>{kraftstoffLabels[fahrzeug.kraftstoff] || fahrzeug.kraftstoff}</span>
-    </div>
   </div>
   
   <div class="card-content">
     <div class="card-header">
       <span class="card-brand">{fahrzeug.marke}</span>
-      <span class="card-arrow">→</span>
+      <span class="card-year">{fahrzeug.baujahr}</span>
     </div>
+    
     <h3 class="card-title">{fahrzeug.modell}</h3>
     
-    {fahrzeug.leistungPS && (
-      <div class="card-power">
-        <span class="power-value">{fahrzeug.leistungPS}</span>
-        <span class="power-unit">PS</span>
-      </div>
-    )}
+    <div class="card-specs">
+      <span>{fahrzeug.kilometerstand?.toLocaleString('de-DE')} km</span>
+      <span class="spec-dot"></span>
+      <span>{kraftstoffLabels[fahrzeug.kraftstoff] || fahrzeug.kraftstoff}</span>
+      {fahrzeug.leistungPS && (
+        <>
+          <span class="spec-dot"></span>
+          <span>{fahrzeug.leistungPS} PS</span>
+        </>
+      )}
+    </div>
     
     <div class="card-footer">
-      <span class="card-price">{fahrzeug.preis?.toLocaleString('de-DE')} €</span>
+      <span class="card-price">
+        {fahrzeug.preis?.toLocaleString('de-DE')}
+        <span class="price-currency">€</span>
+      </span>
+      <span class="card-cta">
+        Details
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </span>
     </div>
   </div>
   
-  <div class="card-glow"></div>
+  <div class="card-border"></div>
 </a>
 
 <style>
-  .fahrzeug-card {
-    background: var(--black-card);
-    position: relative;
+  .vehicle-card {
     display: block;
-    overflow: hidden;
-    border: 1px solid var(--gray-light);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--charcoal);
+    position: relative;
+    opacity: 0;
+    animation: fadeIn 0.8s var(--ease-smooth) forwards;
   }
   
-  .fahrzeug-card::before {
-    content: '';
+  .card-border {
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
     width: 100%;
-    height: 3px;
-    background: var(--red);
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), transparent);
     transform: scaleX(0);
     transform-origin: left;
-    transition: transform 0.4s ease;
-    z-index: 10;
+    transition: transform 0.6s var(--ease-smooth);
   }
   
-  .fahrzeug-card:hover {
-    transform: translateY(-10px);
-    border-color: var(--red);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px var(--red-glow);
-  }
-  
-  .fahrzeug-card:hover::before {
+  .vehicle-card:hover .card-border {
     transform: scaleX(1);
   }
   
+  /* Image */
   .card-image {
     position: relative;
-    height: 220px;
+    height: 280px;
     overflow: hidden;
   }
   
@@ -117,11 +112,13 @@ const kraftstoffLabels: Record<string, string> = {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease, filter 0.4s ease;
+    transition: transform 1s var(--ease-smooth), filter 0.5s ease;
+    filter: brightness(0.95);
   }
   
-  .fahrzeug-card:hover .card-image img {
-    transform: scale(1.1);
+  .vehicle-card:hover .card-image img {
+    transform: scale(1.08);
+    filter: brightness(1);
   }
   
   .card-overlay {
@@ -130,141 +127,142 @@ const kraftstoffLabels: Record<string, string> = {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(180deg, transparent 50%, rgba(10, 10, 10, 0.9) 100%);
+    background: linear-gradient(180deg, transparent 50%, rgba(13, 13, 13, 0.8) 100%);
     pointer-events: none;
   }
   
-  .badge {
+  .card-status {
     position: absolute;
-    top: 15px;
-    left: 0;
-    background: var(--red);
-    color: var(--white);
-    padding: 8px 20px 8px 15px;
-    font-family: var(--font-heading);
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-    z-index: 5;
+    top: 20px;
+    left: 20px;
+    font-family: var(--font-headline);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    background: rgba(201, 169, 98, 0.9);
+    color: var(--obsidian);
   }
   
-  .badge-reserved {
-    background: #FF9500;
+  .card-status.reserved {
+    background: rgba(255, 255, 255, 0.9);
   }
   
-  .card-quick-stats {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
-    right: 15px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.8);
-    font-weight: 500;
-  }
-  
-  .stat-divider {
-    color: var(--red);
-  }
-  
+  /* Content */
   .card-content {
-    padding: 25px;
+    padding: 30px;
   }
   
   .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
   }
   
   .card-brand {
-    font-family: var(--font-heading);
-    font-size: 0.75rem;
+    font-family: var(--font-headline);
+    font-size: 0.65rem;
     font-weight: 600;
-    letter-spacing: 0.2em;
-    color: var(--red);
+    letter-spacing: 0.3em;
     text-transform: uppercase;
+    color: var(--gold);
   }
   
-  .card-arrow {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--gray-light);
-    color: var(--white);
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%);
-  }
-  
-  .fahrzeug-card:hover .card-arrow {
-    background: var(--red);
-    transform: translateX(3px);
+  .card-year {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    color: var(--silver);
   }
   
   .card-title {
-    font-family: var(--font-heading);
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--white);
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.02em;
-  }
-  
-  .card-power {
-    display: inline-flex;
-    align-items: baseline;
-    gap: 3px;
-    margin-bottom: 15px;
-  }
-  
-  .power-value {
     font-family: var(--font-display);
     font-size: 1.8rem;
-    color: var(--white);
-    line-height: 1;
+    font-weight: 500;
+    color: var(--ivory);
+    margin-bottom: 15px;
+    transition: color 0.3s ease;
   }
   
-  .power-unit {
-    font-family: var(--font-heading);
-    font-size: 0.8rem;
-    color: var(--gray);
-    letter-spacing: 0.1em;
+  .vehicle-card:hover .card-title {
+    color: var(--gold);
+  }
+  
+  .card-specs {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: var(--silver);
+    margin-bottom: 25px;
+  }
+  
+  .spec-dot {
+    width: 3px;
+    height: 3px;
+    background: var(--slate);
+    border-radius: 50%;
   }
   
   .card-footer {
-    padding-top: 15px;
-    border-top: 1px solid var(--gray-light);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px;
+    border-top: 1px solid var(--slate);
   }
   
   .card-price {
     font-family: var(--font-display);
-    font-size: 2rem;
-    color: var(--red);
-    letter-spacing: 0.02em;
+    font-size: 1.6rem;
+    color: var(--ivory);
   }
   
-  .card-glow {
-    position: absolute;
-    bottom: -50%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 200%;
-    height: 100%;
-    background: radial-gradient(ellipse, var(--red-glow), transparent 70%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    pointer-events: none;
+  .price-currency {
+    font-size: 1rem;
+    color: var(--silver);
+    margin-left: 2px;
   }
   
-  .fahrzeug-card:hover .card-glow {
-    opacity: 0.3;
+  .card-cta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-headline);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--pearl);
+    transition: all 0.3s ease;
+  }
+  
+  .card-cta svg {
+    transition: transform 0.3s ease;
+  }
+  
+  .vehicle-card:hover .card-cta {
+    color: var(--gold);
+  }
+  
+  .vehicle-card:hover .card-cta svg {
+    transform: translateX(4px);
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  @media (max-width: 768px) {
+    .card-image {
+      height: 220px;
+    }
+    
+    .card-content {
+      padding: 25px;
+    }
   }
 </style>
