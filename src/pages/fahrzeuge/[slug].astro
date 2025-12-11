@@ -1,0 +1,178 @@
+---
+// src/pages/fahrzeuge/[slug].astro
+import Layout from '../../layouts/Layout.astro';
+import { getAlleFahrzeugSlugs, getFahrzeugBySlug, getAehnlicheFahrzeuge, urlFor } from '../../lib/sanity';
+import type { Fahrzeug } from '../../types/sanity';
+
+// Generiert alle Seiten bei Build-Time
+export async function getStaticPaths() {
+  const slugs = await getAlleFahrzeugSlugs();
+  
+  return slugs.map((item: { slug: string }) => ({
+    params: { slug: item.slug }
+  }));
+}
+
+const { slug } = Astro.params;
+const fahrzeug: Fahrzeug = await getFahrzeugBySlug(slug);
+
+// 404 wenn nicht gefunden
+if (!fahrzeug) {
+  return Astro.redirect('/404');
+}
+
+const aehnliche = await getAehnlicheFahrzeuge(fahrzeug.marke, fahrzeug._id);
+
+// SEO Daten
+const title = `${fahrzeug.marke} ${fahrzeug.modell} (${fahrzeug.baujahr}) | AHAM Automobile`;
+const description = `${fahrzeug.marke} ${fahrzeug.modell} mit ${fahrzeug.kilometerstand?.toLocaleString('de-DE')} km für ${fahrzeug.preis?.toLocaleString('de-DE')}€ in Ludwigsfelde kaufen.`;
+const image = urlFor(fahrzeug.hauptbild).width(1200).height(630).url();
+
+// Structured Data für Google
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Car",
+  "name": `${fahrzeug.marke} ${fahrzeug.modell}`,
+  "brand": {
+    "@type": "Brand",
+    "name": fahrzeug.marke
+  },
+  "model": fahrzeug.modell,
+  "vehicleModelDate": fahrzeug.baujahr.toString(),
+  "mileageFromOdometer": {
+    "@type": "QuantitativeValue",
+    "value": fahrzeug.kilometerstand,
+    "unitCode": "KMT"
+  },
+  "fuelType": fahrzeug.kraftstoff,
+  "vehicleTransmission": fahrzeug.getriebe,
+  "image": image,
+  "offers": {
+    "@type": "Offer",
+    "price": fahrzeug.preis,
+    "priceCurrency": "EUR",
+    "availability": fahrzeug.status === 'verfuegbar' 
+      ? "https://schema.org/InStock" 
+      : "https://schema.org/OutOfStock"
+  },
+  "seller": {
+    "@type": "AutoDealer",
+    "name": "AHAM Automobile",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Nuthedamm 17",
+      "postalCode": "14974",
+      "addressLocality": "Ludwigsfelde",
+      "addressCountry": "DE"
+    }
+  }
+};
+---
+
+<Layout title={title} description={description} image={image}>
+  <!-- Structured Data für SEO -->
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+
+  <main>
+    <article class="fahrzeug-detail">
+      <!-- Bildergalerie -->
+      <section class="galerie">
+        <img 
+          src={urlFor(fahrzeug.hauptbild).width(800).height(600).url()} 
+          alt={`${fahrzeug.marke} ${fahrzeug.modell}`}
+          class="hauptbild"
+        />
+        {fahrzeug.galerie && (
+          <div class="thumbnails">
+            {fahrzeug.galerie.map((bild, index) => (
+              <img 
+                src={urlFor(bild).width(200).height(150).url()}
+                alt={`${fahrzeug.marke} ${fahrzeug.modell} Bild ${index + 2}`}
+              />
+            ))}
+          </div>
+        )}
+      </section>
+
+      <!-- Fahrzeug-Infos -->
+      <section class="infos">
+        <span class="marke">{fahrzeug.marke}</span>
+        <h1>{fahrzeug.modell}</h1>
+        
+        <div class="preis">
+          {fahrzeug.preis.toLocaleString('de-DE')} €
+          {fahrzeug.mwst && <span class="mwst">inkl. MwSt.</span>}
+        </div>
+
+        <div class="specs">
+          <div class="spec">
+            <span class="label">Erstzulassung</span>
+            <span class="value">{fahrzeug.baujahr}</span>
+          </div>
+          <div class="spec">
+            <span class="label">Kilometerstand</span>
+            <span class="value">{fahrzeug.kilometerstand?.toLocaleString('de-DE')} km</span>
+          </div>
+          <div class="spec">
+            <span class="label">Kraftstoff</span>
+            <span class="value">{fahrzeug.kraftstoff}</span>
+          </div>
+          <div class="spec">
+            <span class="label">Getriebe</span>
+            <span class="value">{fahrzeug.getriebe}</span>
+          </div>
+          {fahrzeug.leistungPS && (
+            <div class="spec">
+              <span class="label">Leistung</span>
+              <span class="value">{fahrzeug.leistungPS} PS</span>
+            </div>
+          )}
+        </div>
+
+        {fahrzeug.ausstattung && fahrzeug.ausstattung.length > 0 && (
+          <div class="ausstattung">
+            <h3>Ausstattung</h3>
+            <ul>
+              {fahrzeug.ausstattung.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {fahrzeug.beschreibung && (
+          <div class="beschreibung">
+            <h3>Beschreibung</h3>
+            <p>{fahrzeug.beschreibung}</p>
+          </div>
+        )}
+
+        <!-- CTA -->
+        <div class="cta">
+          <a href="tel:01708949479" class="btn-primary">
+            Jetzt anrufen: 0170 8949479
+          </a>
+          <a href="/kontakt" class="btn-secondary">
+            Anfrage senden
+          </a>
+        </div>
+      </section>
+    </article>
+
+    <!-- Ähnliche Fahrzeuge -->
+    {aehnliche.length > 0 && (
+      <section class="aehnliche">
+        <h2>Weitere {fahrzeug.marke} Fahrzeuge</h2>
+        <div class="grid">
+          {aehnliche.map((f) => (
+            <a href={`/fahrzeuge/${f.slug}`}>
+              <img src={urlFor(f.hauptbild).width(400).height(300).url()} alt={f.modell} />
+              <h3>{f.marke} {f.modell}</h3>
+              <p>{f.preis?.toLocaleString('de-DE')} €</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+  </main>
+</Layout>

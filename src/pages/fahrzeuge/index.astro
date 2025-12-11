@@ -1,0 +1,31 @@
+---
+// src/pages/fahrzeuge/index.astro
+import Layout from '../../layouts/Layout.astro';
+import FahrzeugCard from '../../components/FahrzeugCard.astro';
+import { getAlleFahrzeuge } from '../../lib/sanity';
+import type { Fahrzeug } from '../../types/sanity';
+
+const fahrzeuge: Fahrzeug[] = await getAlleFahrzeuge();
+---
+
+<Layout 
+  title="Unsere Fahrzeuge | AHAM Automobile"
+  description="Entdecken Sie unsere Auswahl an geprüften Gebrauchtwagen in Ludwigsfelde."
+>
+  <main>
+    <section class="fahrzeuge-header">
+      <h1>Unsere Fahrzeuge</h1>
+      <p>{fahrzeuge.length} Fahrzeuge verfügbar</p>
+    </section>
+
+    <section class="fahrzeuge-grid">
+      {fahrzeuge.map((fahrzeug) => (
+        <FahrzeugCard fahrzeug={fahrzeug} />
+      ))}
+    </section>
+  </main>
+</Layout>
+
+<style>
+  /* Dein CSS hier */
+</style>
