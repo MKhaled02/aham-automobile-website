@@ -4,14 +4,14 @@ import Layout from '../layouts/Layout.astro';
 
 <Layout 
   title="Kontakt | AHAM Automobile"
-  description="Kontaktieren Sie AHAM Automobile in Ludwigsfelde. Telefon, Adresse und Öffnungszeiten."
+  description="Kontaktiere AHAM Automobile in Ludwigsfelde."
 >
   
   <section class="kontakt-hero">
+    <div class="hero-bg"></div>
     <div class="kontakt-hero-content">
-      <span class="section-label">Kontakt</span>
-      <h1>Wir freuen uns auf <span>Sie</span></h1>
-      <p>Besuchen Sie uns in Ludwigsfelde oder rufen Sie uns einfach an.</p>
+      <span class="section-label">Get in Touch</span>
+      <h1>KONTAKT<span class="text-red">IERE UNS</span></h1>
     </div>
   </section>
   
@@ -19,202 +19,65 @@ import Layout from '../layouts/Layout.astro';
     <div class="kontakt-info">
       <div class="info-card">
         <span class="info-icon">📍</span>
-        <h3>Adresse</h3>
+        <h3>STANDORT</h3>
         <p>
           AHAM Automobile<br>
           Nuthedamm 17<br>
           14974 Ludwigsfelde<br>
-          (Preussen Park)
+          <span class="highlight">Preussen Park</span>
         </p>
-        <a href="https://maps.google.com/?q=Nuthedamm+17+14974+Ludwigsfelde" target="_blank" rel="noopener" class="info-link">
-          Route planen →
-        </a>
+        <a href="https://maps.google.com/?q=Nuthedamm+17+14974+Ludwigsfelde" target="_blank" class="info-link">Route planen →</a>
       </div>
       
-      <div class="info-card">
+      <div class="info-card featured">
         <span class="info-icon">📞</span>
-        <h3>Telefon</h3>
-        <p>
-          <a href="tel:01708949479" class="phone-link">0170 8949479</a>
-        </p>
-        <p class="info-note">Am besten erreichbar während der Öffnungszeiten</p>
+        <h3>TELEFON</h3>
+        <a href="tel:01708949479" class="phone-link">0170 8949479</a>
+        <p>Ruf einfach an!</p>
       </div>
       
       <div class="info-card">
         <span class="info-icon">🕐</span>
-        <h3>Öffnungszeiten</h3>
-        <p>
-          <strong>Donnerstag:</strong> 10:00 – 18:00 Uhr<br>
-          <strong>Andere Tage:</strong> Nach Vereinbarung
-        </p>
-        <p class="info-note">Termine außerhalb der Öffnungszeiten gerne nach Absprache</p>
+        <h3>ÖFFNUNGSZEITEN</h3>
+        <p><strong>Donnerstag:</strong> 10:00 – 18:00 Uhr<br><strong>Sonst:</strong> Nach Vereinbarung</p>
       </div>
     </div>
     
     <div class="kontakt-map">
-      <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2437.5!2d13.2547!3d52.3019!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTLCsDE4JzA2LjgiTiAxM8KwMTUnMTYuOSJF!5e0!3m2!1sde!2sde!4v1" 
-        width="100%" 
-        height="100%" 
-        style="border:0;" 
-        allowfullscreen="" 
-        loading="lazy"
-        title="AHAM Automobile Standort"
-      ></iframe>
+      <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2437.5!2d13.2547!3d52.3019!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNTLCsDE4JzA2LjgiTiAxM8KwMTUnMTYuOSJF!5e0!3m2!1sde!2sde!4v1" width="100%" height="100%" style="border:0;" loading="lazy" title="Standort"></iframe>
     </div>
-  </section>
-  
-  <section class="cta-section">
-    <h2>Haben Sie Fragen?</h2>
-    <p>Wir helfen Ihnen gerne weiter – rufen Sie uns einfach an!</p>
-    <a href="tel:01708949479" class="btn btn-primary">Jetzt anrufen: 0170 8949479</a>
   </section>
   
 </Layout>
 
 <style>
-  .kontakt-hero {
-    background: var(--cream);
-    padding: 150px 60px 80px;
-    text-align: center;
-  }
-  
-  .kontakt-hero h1 {
-    margin-bottom: 15px;
-  }
-  
-  .kontakt-hero h1 span {
-    color: var(--olive);
-  }
-  
-  .kontakt-hero p {
-    color: var(--gray);
-    font-size: 1.1rem;
-    max-width: 500px;
-    margin: 0 auto;
-  }
-  
-  .kontakt-main {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    min-height: 500px;
-  }
-  
-  .kontakt-info {
-    padding: 60px;
-    display: flex;
-    flex-direction: column;
-    gap: 40px;
-  }
-  
-  .info-card {
-    padding-bottom: 40px;
-    border-bottom: 1px solid var(--gray-light);
-  }
-  
-  .info-card:last-child {
-    border-bottom: none;
-  }
-  
-  .info-icon {
-    font-size: 2rem;
-    margin-bottom: 15px;
-    display: block;
-  }
-  
-  .info-card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 15px;
-  }
-  
-  .info-card p {
-    color: var(--gray-dark);
-    line-height: 1.8;
-  }
-  
-  .phone-link {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--olive);
-    transition: color 0.3s ease;
-  }
-  
-  .phone-link:hover {
-    color: var(--olive-dark);
-  }
-  
-  .info-link {
-    display: inline-block;
-    margin-top: 15px;
-    color: var(--olive);
-    font-weight: 500;
-    transition: gap 0.3s ease;
-  }
-  
-  .info-link:hover {
-    text-decoration: underline;
-  }
-  
-  .info-note {
-    font-size: 0.85rem;
-    color: var(--gray);
-    margin-top: 10px;
-  }
-  
-  .kontakt-map {
-    background: var(--gray-light);
-  }
-  
-  .kontakt-map iframe {
-    filter: grayscale(100%) contrast(1.1);
-  }
-  
-  .cta-section {
-    background: var(--olive);
-    color: var(--white);
-    padding: 80px 60px;
-    text-align: center;
-  }
-  
-  .cta-section h2 {
-    color: var(--white);
-    margin-bottom: 15px;
-  }
-  
-  .cta-section p {
-    margin-bottom: 30px;
-    opacity: 0.9;
-  }
-  
-  .cta-section .btn-primary {
-    background: var(--white);
-    color: var(--olive);
-    border-color: var(--white);
-  }
-  
-  .cta-section .btn-primary:hover {
-    background: var(--cream);
-  }
-  
+  .kontakt-hero { position: relative; padding: 180px 60px 100px; text-align: center; }
+  .hero-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--black-light); z-index: 0; }
+  .hero-bg::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, var(--red-glow), transparent 70%); opacity: 0.3; }
+  .kontakt-hero-content { position: relative; z-index: 1; }
+  .kontakt-hero h1 { font-family: var(--font-display); font-size: clamp(3rem, 6vw, 5rem); }
+  .text-red { color: var(--red); }
+  .kontakt-main { display: grid; grid-template-columns: 1fr 1.5fr; min-height: 600px; }
+  .kontakt-info { background: var(--black-card); padding: 60px; display: flex; flex-direction: column; }
+  .info-card { padding: 40px 0; border-bottom: 1px solid var(--gray-light); }
+  .info-card:last-child { border-bottom: none; }
+  .info-card.featured { background: linear-gradient(135deg, var(--red-dark), var(--black)); margin: 0 -60px; padding: 40px 60px; border: none; }
+  .info-icon { font-size: 2rem; margin-bottom: 15px; display: block; }
+  .info-card h3 { font-family: var(--font-heading); font-size: 0.9rem; letter-spacing: 0.2em; color: var(--red); margin-bottom: 15px; }
+  .info-card.featured h3 { color: var(--white); }
+  .info-card p { color: var(--gray); line-height: 1.8; }
+  .info-card.featured p { color: rgba(255,255,255,0.7); }
+  .highlight { color: var(--red); font-weight: 600; }
+  .phone-link { font-family: var(--font-display); font-size: 2.5rem; color: var(--white); display: block; margin-bottom: 10px; }
+  .phone-link:hover { text-shadow: 0 0 30px var(--red-glow); }
+  .info-link { display: inline-block; margin-top: 15px; color: var(--red); font-family: var(--font-heading); font-weight: 600; }
+  .kontakt-map { background: var(--gray-light); }
+  .kontakt-map iframe { filter: grayscale(100%) contrast(1.2); }
   @media (max-width: 968px) {
-    .kontakt-hero {
-      padding: 120px 20px 60px;
-    }
-    
-    .kontakt-main {
-      grid-template-columns: 1fr;
-    }
-    
-    .kontakt-info {
-      padding: 40px 20px;
-    }
-    
-    .kontakt-map {
-      height: 400px;
-    }
-    
-    .cta-section {
-      padding: 60px 20px;
-    }
+    .kontakt-hero { padding: 140px 20px 60px; }
+    .kontakt-main { grid-template-columns: 1fr; }
+    .kontakt-info { padding: 40px 20px; }
+    .info-card.featured { margin: 0 -20px; padding: 40px 20px; }
+    .kontakt-map { height: 400px; }
   }
 </style>

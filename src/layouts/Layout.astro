@@ -11,7 +11,7 @@ interface Props {
 
 const { 
   title, 
-  description = 'AHAM Automobile - Ihr vertrauenswürdiger Autohändler in Ludwigsfelde. Geprüfte Gebrauchtwagen mit Garantie.',
+  description = 'AHAM Automobile - Dein Autohändler in Ludwigsfelde. Geprüfte Gebrauchtwagen mit Garantie.',
   image = '/og-image.jpg'
 } = Astro.props;
 ---
@@ -37,6 +37,9 @@ const {
   
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  
+  <!-- Theme Color -->
+  <meta name="theme-color" content="#E31837">
   
   <title>{title}</title>
 </head>

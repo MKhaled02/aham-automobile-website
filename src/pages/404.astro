@@ -2,54 +2,30 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Seite nicht gefunden | AHAM Automobile">
-  
+<Layout title="404 | AHAM Automobile">
   <section class="error-page">
-    <span class="error-code">404</span>
-    <h1>Seite nicht gefunden</h1>
-    <p>Die gewünschte Seite existiert leider nicht oder wurde verschoben.</p>
-    <div class="error-buttons">
-      <a href="/" class="btn btn-primary">Zur Startseite</a>
-      <a href="/fahrzeuge" class="btn btn-secondary">Fahrzeuge ansehen</a>
+    <div class="error-bg"></div>
+    <div class="error-content">
+      <span class="error-code">404</span>
+      <h1>SEITE NICHT <span>GEFUNDEN</span></h1>
+      <p>Die gewünschte Seite existiert leider nicht.</p>
+      <div class="error-buttons">
+        <a href="/" class="btn btn-primary">Zur Startseite</a>
+        <a href="/fahrzeuge" class="btn btn-secondary">Fahrzeuge</a>
+      </div>
     </div>
   </section>
-  
 </Layout>
 
 <style>
-  .error-page {
-    min-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    padding: 40px 20px;
-  }
-  
-  .error-code {
-    font-family: var(--font-display);
-    font-size: 8rem;
-    font-weight: 700;
-    color: var(--olive);
-    line-height: 1;
-    opacity: 0.3;
-  }
-  
-  .error-page h1 {
-    margin: 20px 0;
-  }
-  
-  .error-page p {
-    color: var(--gray);
-    margin-bottom: 40px;
-    max-width: 400px;
-  }
-  
-  .error-buttons {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+  .error-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
+  .error-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--black); z-index: 0; }
+  .error-bg::before { content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 600px; height: 600px; background: radial-gradient(circle, var(--red-glow), transparent 70%); opacity: 0.3; }
+  .error-content { position: relative; z-index: 1; text-align: center; padding: 40px 20px; }
+  .error-code { font-family: var(--font-display); font-size: 12rem; line-height: 1; color: var(--red); text-shadow: 0 0 100px var(--red-glow); }
+  .error-content h1 { font-family: var(--font-display); font-size: clamp(1.5rem, 4vw, 2.5rem); margin: 20px 0; }
+  .error-content h1 span { color: var(--red); }
+  .error-content p { color: var(--gray); margin-bottom: 40px; }
+  .error-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+  @media (max-width: 768px) { .error-code { font-size: 8rem; } }
 </style>

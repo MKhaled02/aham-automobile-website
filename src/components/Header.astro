@@ -1,28 +1,36 @@
 ---
-// Header Component
+// Header Component - Sporty Design
 ---
 
 <header class="header">
+  <div class="header-accent"></div>
   <nav class="nav">
     <a href="/" class="logo">
-      <svg class="logo-icon" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M10 35 Q30 20 50 30 Q70 40 90 28 Q110 16 130 25 Q150 34 170 22 Q185 14 195 18" stroke="currentColor" stroke-width="2" fill="none"/>
-        <path d="M15 40 Q35 28 55 35 Q75 42 95 32 Q115 22 135 30 Q155 38 175 28 Q188 22 195 25" stroke="currentColor" stroke-width="1.5" fill="none" opacity="0.6"/>
-      </svg>
-      <span class="logo-text">AHAM AUTOMOBILE</span>
+      <div class="logo-icon">
+        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="25,5 45,40 5,40" fill="none" stroke="currentColor" stroke-width="2"/>
+          <text x="25" y="33" text-anchor="middle" fill="currentColor" font-family="Bebas Neue" font-size="16" font-weight="bold">A</text>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-main">AHAM</span>
+        <span class="logo-sub">AUTOMOBILE</span>
+      </div>
     </a>
     
     <ul class="nav-links">
-      <li><a href="/">Startseite</a></li>
-      <li><a href="/fahrzeuge">Fahrzeuge</a></li>
-      <li><a href="/kontakt">Kontakt</a></li>
+      <li><a href="/" class="nav-link">Start</a></li>
+      <li><a href="/fahrzeuge" class="nav-link">Fahrzeuge</a></li>
+      <li><a href="/kontakt" class="nav-link">Kontakt</a></li>
     </ul>
     
-    <a href="tel:01708949479" class="nav-phone">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-      </svg>
-      0170 8949479
+    <a href="tel:01708949479" class="nav-cta">
+      <span class="cta-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+        </svg>
+      </span>
+      <span class="cta-text">0170 8949479</span>
     </a>
     
     <button class="mobile-menu-btn" aria-label="Menü öffnen">
@@ -40,16 +48,28 @@
     left: 0;
     width: 100%;
     z-index: 1000;
-    background: rgba(248, 247, 244, 0.95);
+    background: rgba(10, 10, 10, 0.95);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--gray-light);
+  }
+  
+  .header-accent {
+    height: 3px;
+    background: linear-gradient(90deg, var(--red), var(--red-dark), var(--red));
+    background-size: 200% 100%;
+    animation: gradient-slide 3s ease infinite;
+  }
+  
+  @keyframes gradient-slide {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
   }
   
   .nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 60px;
+    padding: 15px 60px;
     max-width: 1600px;
     margin: 0 auto;
   }
@@ -61,71 +81,101 @@
   }
   
   .logo-icon {
-    height: 40px;
-    width: auto;
-    color: var(--olive);
+    width: 45px;
+    height: 45px;
+    color: var(--red);
+  }
+  
+  .logo-icon svg {
+    width: 100%;
+    height: 100%;
   }
   
   .logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+  }
+  
+  .logo-main {
     font-family: var(--font-display);
-    font-size: 1.3rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    color: var(--olive);
+    font-size: 1.8rem;
+    letter-spacing: 0.1em;
+    color: var(--white);
+  }
+  
+  .logo-sub {
+    font-family: var(--font-heading);
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--gray);
   }
   
   .nav-links {
     display: flex;
-    gap: 40px;
+    gap: 50px;
     list-style: none;
   }
   
-  .nav-links a {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--gray-dark);
+  .nav-link {
+    font-family: var(--font-heading);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--white);
     position: relative;
-    padding: 5px 0;
+    padding: 10px 0;
     transition: color 0.3s ease;
   }
   
-  .nav-links a::after {
+  .nav-link::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     width: 0;
     height: 2px;
-    background: var(--olive);
+    background: var(--red);
     transition: width 0.3s ease;
+    box-shadow: 0 0 10px var(--red-glow);
   }
   
-  .nav-links a:hover {
-    color: var(--olive);
+  .nav-link:hover {
+    color: var(--red);
   }
   
-  .nav-links a:hover::after {
+  .nav-link:hover::after {
     width: 100%;
   }
   
-  .nav-phone {
+  .nav-cta {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: var(--olive);
+    gap: 10px;
+    background: var(--red);
+    color: var(--white);
+    padding: 12px 25px;
+    font-family: var(--font-heading);
     font-weight: 600;
-    font-size: 0.95rem;
-    transition: color 0.3s ease;
+    letter-spacing: 0.1em;
+    clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 100%, 10px 100%);
+    transition: all 0.3s ease;
   }
   
-  .nav-phone:hover {
-    color: var(--olive-dark);
+  .nav-cta:hover {
+    background: var(--red-light);
+    box-shadow: 0 0 30px var(--red-glow);
+  }
+  
+  .cta-icon {
+    display: flex;
   }
   
   .mobile-menu-btn {
     display: none;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
     background: none;
     border: none;
     cursor: pointer;
@@ -133,27 +183,35 @@
   }
   
   .mobile-menu-btn span {
-    width: 25px;
+    width: 28px;
     height: 2px;
-    background: var(--black);
+    background: var(--white);
     transition: all 0.3s ease;
+  }
+  
+  .mobile-menu-btn:hover span {
+    background: var(--red);
   }
   
   @media (max-width: 968px) {
     .nav {
-      padding: 15px 20px;
+      padding: 12px 20px;
     }
     
     .nav-links {
       display: none;
     }
     
-    .nav-phone {
+    .nav-cta {
       display: none;
     }
     
     .mobile-menu-btn {
       display: flex;
+    }
+    
+    .logo-main {
+      font-size: 1.4rem;
     }
   }
 </style>

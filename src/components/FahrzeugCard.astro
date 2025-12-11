@@ -9,11 +9,11 @@ interface Props {
 const { fahrzeug } = Astro.props;
 
 const badgeLabels: Record<string, string> = {
-  neu: 'Neu eingetroffen',
-  top: 'Top Angebot',
-  reduziert: 'Reduziert',
-  garantie: 'Mit Garantie',
-  tuev: 'TÜV Neu'
+  neu: 'NEU',
+  top: 'TOP DEAL',
+  reduziert: 'REDUZIERT',
+  garantie: 'GARANTIE',
+  tuev: 'TÜV NEU'
 };
 
 const kraftstoffLabels: Record<string, string> = {
@@ -22,7 +22,7 @@ const kraftstoffLabels: Record<string, string> = {
   elektro: 'Elektro',
   'hybrid-benzin': 'Hybrid',
   'hybrid-diesel': 'Hybrid',
-  'plugin-hybrid': 'Plug-in-Hybrid'
+  'plugin-hybrid': 'Plug-in'
 };
 ---
 
@@ -35,44 +35,76 @@ const kraftstoffLabels: Record<string, string> = {
         loading="lazy"
       />
     )}
+    <div class="card-overlay"></div>
     {fahrzeug.badge && (
       <span class="badge">{badgeLabels[fahrzeug.badge] || fahrzeug.badge}</span>
     )}
     {fahrzeug.status === 'reserviert' && (
-      <span class="badge badge-reserved">Reserviert</span>
+      <span class="badge badge-reserved">RESERVIERT</span>
     )}
+    <div class="card-quick-stats">
+      <span>{fahrzeug.baujahr}</span>
+      <span class="stat-divider">|</span>
+      <span>{fahrzeug.kilometerstand?.toLocaleString('de-DE')} km</span>
+      <span class="stat-divider">|</span>
+      <span>{kraftstoffLabels[fahrzeug.kraftstoff] || fahrzeug.kraftstoff}</span>
+    </div>
   </div>
   
   <div class="card-content">
-    <span class="card-brand">{fahrzeug.marke}</span>
+    <div class="card-header">
+      <span class="card-brand">{fahrzeug.marke}</span>
+      <span class="card-arrow">→</span>
+    </div>
     <h3 class="card-title">{fahrzeug.modell}</h3>
     
-    <div class="card-specs">
-      <span>{fahrzeug.baujahr}</span>
-      <span class="divider">•</span>
-      <span>{fahrzeug.kilometerstand?.toLocaleString('de-DE')} km</span>
-      <span class="divider">•</span>
-      <span>{kraftstoffLabels[fahrzeug.kraftstoff] || fahrzeug.kraftstoff}</span>
-    </div>
+    {fahrzeug.leistungPS && (
+      <div class="card-power">
+        <span class="power-value">{fahrzeug.leistungPS}</span>
+        <span class="power-unit">PS</span>
+      </div>
+    )}
     
     <div class="card-footer">
       <span class="card-price">{fahrzeug.preis?.toLocaleString('de-DE')} €</span>
-      <span class="card-arrow">→</span>
     </div>
   </div>
+  
+  <div class="card-glow"></div>
 </a>
 
 <style>
   .fahrzeug-card {
-    background: var(--white);
-    overflow: hidden;
-    transition: all 0.4s ease;
+    background: var(--black-card);
+    position: relative;
     display: block;
+    overflow: hidden;
+    border: 1px solid var(--gray-light);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .fahrzeug-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--red);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+    z-index: 10;
   }
   
   .fahrzeug-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    transform: translateY(-10px);
+    border-color: var(--red);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px var(--red-glow);
+  }
+  
+  .fahrzeug-card:hover::before {
+    transform: scaleX(1);
   }
   
   .card-image {
@@ -85,93 +117,154 @@ const kraftstoffLabels: Record<string, string> = {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.6s ease;
+    transition: transform 0.6s ease, filter 0.4s ease;
   }
   
   .fahrzeug-card:hover .card-image img {
-    transform: scale(1.05);
+    transform: scale(1.1);
+  }
+  
+  .card-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, transparent 50%, rgba(10, 10, 10, 0.9) 100%);
+    pointer-events: none;
   }
   
   .badge {
     position: absolute;
     top: 15px;
-    left: 15px;
-    background: var(--olive);
+    left: 0;
+    background: var(--red);
     color: var(--white);
-    padding: 6px 14px;
+    padding: 8px 20px 8px 15px;
+    font-family: var(--font-heading);
     font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+    z-index: 5;
   }
   
   .badge-reserved {
-    background: #E6A23C;
+    background: #FF9500;
+  }
+  
+  .card-quick-stats {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 500;
+  }
+  
+  .stat-divider {
+    color: var(--red);
   }
   
   .card-content {
     padding: 25px;
   }
   
-  .card-brand {
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    color: var(--olive);
-    text-transform: uppercase;
-    margin-bottom: 5px;
-    display: block;
-  }
-  
-  .card-title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    margin-bottom: 12px;
-    color: var(--black);
-  }
-  
-  .card-specs {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.85rem;
-    color: var(--gray);
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-  
-  .divider {
-    color: var(--gray-light);
-  }
-  
-  .card-footer {
+  .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 5px;
+  }
+  
+  .card-brand {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: var(--red);
+    text-transform: uppercase;
+  }
+  
+  .card-arrow {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gray-light);
+    color: var(--white);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    clip-path: polygon(0 0, calc(100% - 5px) 0, 100% 100%, 5px 100%);
+  }
+  
+  .fahrzeug-card:hover .card-arrow {
+    background: var(--red);
+    transform: translateX(3px);
+  }
+  
+  .card-title {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+  
+  .card-power {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 3px;
+    margin-bottom: 15px;
+  }
+  
+  .power-value {
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--white);
+    line-height: 1;
+  }
+  
+  .power-unit {
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+    color: var(--gray);
+    letter-spacing: 0.1em;
+  }
+  
+  .card-footer {
     padding-top: 15px;
     border-top: 1px solid var(--gray-light);
   }
   
   .card-price {
     font-family: var(--font-display);
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--olive);
+    font-size: 2rem;
+    color: var(--red);
+    letter-spacing: 0.02em;
   }
   
-  .card-arrow {
-    width: 40px;
-    height: 40px;
-    background: var(--black);
-    color: var(--white);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    transition: background 0.3s ease;
+  .card-glow {
+    position: absolute;
+    bottom: -50%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 200%;
+    height: 100%;
+    background: radial-gradient(ellipse, var(--red-glow), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
   }
   
-  .fahrzeug-card:hover .card-arrow {
-    background: var(--olive);
+  .fahrzeug-card:hover .card-glow {
+    opacity: 0.3;
   }
 </style>

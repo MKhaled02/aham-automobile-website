@@ -1,29 +1,32 @@
 /* ============================================
-   AHAM AUTOMOBILE - GLOBAL STYLES
+   AHAM AUTOMOBILE - SPORTY BLACK/RED DESIGN
    ============================================ */
 
 /* Google Fonts Import */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* CSS Variables */
 :root {
-  /* Brand Colors - Olive/Gold Theme */
-  --olive: #8B8B6E;
-  --olive-light: #A8A889;
-  --olive-dark: #6E6E56;
-  --gold: #9A9A7C;
+  /* Brand Colors - Sporty Black/Red Theme */
+  --red: #E31837;
+  --red-light: #FF2D4A;
+  --red-dark: #B81430;
+  --red-glow: rgba(227, 24, 55, 0.4);
   
   /* Neutrals */
-  --cream: #F8F7F4;
+  --black: #0A0A0A;
+  --black-light: #141414;
+  --black-card: #1A1A1A;
+  --black-hover: #222222;
   --white: #FFFFFF;
-  --black: #1A1A1A;
-  --gray-dark: #2D2D2D;
-  --gray: #6B6B6B;
-  --gray-light: #E8E8E8;
+  --gray: #888888;
+  --gray-dark: #666666;
+  --gray-light: #333333;
   
   /* Typography */
-  --font-display: 'Cormorant Garamond', serif;
-  --font-body: 'Outfit', sans-serif;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-heading: 'Rajdhani', sans-serif;
+  --font-body: 'Inter', sans-serif;
   
   /* Spacing */
   --section-padding: 100px 60px;
@@ -43,21 +46,23 @@ html {
 
 body {
   font-family: var(--font-body);
-  background: var(--cream);
-  color: var(--black);
+  background: var(--black);
+  color: var(--white);
   line-height: 1.6;
   overflow-x: hidden;
 }
 
 /* Typography */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  font-weight: 600;
-  line-height: 1.2;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
-h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
-h2 { font-size: clamp(2rem, 4vw, 3rem); }
+h1 { font-size: clamp(3rem, 6vw, 5rem); }
+h2 { font-size: clamp(2.2rem, 4vw, 3.5rem); }
 h3 { font-size: clamp(1.5rem, 3vw, 2rem); }
 
 a {
@@ -71,79 +76,116 @@ img {
   display: block;
 }
 
+/* Selection */
+::selection {
+  background: var(--red);
+  color: var(--white);
+}
+
 /* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 32px;
-  font-family: var(--font-body);
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  padding: 16px 36px;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn-primary {
-  background: var(--olive);
+  background: var(--red);
   color: var(--white);
-  border: 2px solid var(--olive);
+  clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 100%, 15px 100%);
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s ease;
 }
 
 .btn-primary:hover {
-  background: var(--olive-dark);
-  border-color: var(--olive-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(139, 139, 110, 0.3);
+  background: var(--red-light);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 40px var(--red-glow);
+}
+
+.btn-primary:hover::before {
+  left: 100%;
 }
 
 .btn-secondary {
   background: transparent;
-  color: var(--black);
+  color: var(--white);
   border: 2px solid var(--gray-light);
+  clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 100%, 15px 100%);
 }
 
 .btn-secondary:hover {
-  border-color: var(--olive);
-  color: var(--olive);
+  border-color: var(--red);
+  color: var(--red);
+  box-shadow: 0 0 20px var(--red-glow);
 }
 
 /* Section Styles */
 .section {
   padding: var(--section-padding);
+  position: relative;
 }
 
 .section-header {
   text-align: center;
-  max-width: 600px;
+  max-width: 700px;
   margin: 0 auto 60px;
 }
 
 .section-label {
-  display: inline-block;
-  font-size: 0.8rem;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  color: var(--olive);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  color: var(--red);
   margin-bottom: 15px;
   text-transform: uppercase;
 }
 
+.section-label::before,
+.section-label::after {
+  content: '';
+  width: 30px;
+  height: 2px;
+  background: var(--red);
+}
+
 .section-title {
   margin-bottom: 20px;
-  color: var(--black);
+  color: var(--white);
 }
 
 .section-title span {
-  color: var(--olive);
+  color: var(--red);
 }
 
 .section-subtitle {
   font-size: 1.05rem;
   color: var(--gray);
-  font-weight: 300;
+  font-weight: 400;
 }
 
 /* Container */
@@ -167,7 +209,7 @@ img {
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(40px);
   }
   to {
     opacity: 1;
@@ -175,22 +217,45 @@ img {
   }
 }
 
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px var(--red-glow); }
+  50% { box-shadow: 0 0 40px var(--red-glow); }
+}
+
+@keyframes slide-in {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
 .fade-in {
   animation: fadeInUp 0.8s ease forwards;
 }
 
+/* Diagonal Line Decoration */
+.diagonal-line {
+  position: absolute;
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--red), transparent);
+  transform: rotate(-45deg);
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--cream);
+  background: var(--black);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--olive);
-  border-radius: 4px;
+  background: var(--red);
+  border: 2px solid var(--black);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--red-light);
 }
 
 /* Responsive */
@@ -208,5 +273,10 @@ img {
   .grid-3,
   .grid-2 {
     grid-template-columns: 1fr;
+  }
+  
+  .section-label::before,
+  .section-label::after {
+    width: 15px;
   }
 }
